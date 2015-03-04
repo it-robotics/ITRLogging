@@ -1,0 +1,8 @@
+ITRLogging
+
+Copyright (c) 2004-2014 The Apache Software Foundation
+Copyright (c) 2014 IT+Robotics Srl
+Copyright (c) 2015 Francesco Pretto
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
