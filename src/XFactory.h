@@ -6,7 +6,6 @@
 
 #include <log4cxx/logger.h>
 #include <log4cxx/spi/loggerfactory.h>
-#include "ITRCommon_Config.h"
 
 namespace log4cxx
 { 
@@ -16,7 +15,7 @@ namespace log4cxx
 
   // Any sub-class of Logger must also have its own implementation of LoggerFactory.
   // NB: Fixed "inherits via dominance" warnings https://issues.apache.org/jira/browse/LOGCXX-219
-  class ITR_COMMON_SHARED_API XFactory :
+  class XFactory :
     public virtual spi::LoggerFactory,
     public virtual helpers::ObjectImpl
   {

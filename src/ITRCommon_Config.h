@@ -1,19 +1,15 @@
 #pragma once
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 
 #ifdef ITR_COMMON_SHARED_EXPORTS
-	#define ITR_COMMON_SHARED_API __declspec(dllexport)
+  #define ITR_COMMON_SHARED_API __declspec(dllexport)
 #else
-	#define ITR_COMMON_SHARED_API __declspec(dllimport)
+  #define ITR_COMMON_SHARED_API __declspec(dllimport)
 #endif
 
 #elif __GNUC__
 
-#ifdef ITR_COMMON_SHARED_EXPORTS
-	#define ITR_COMMON_SHARED_API __attribute__ ((visibility ("default")))
-#else
-	#define ITR_COMMON_SHARED_API
-#endif
+#define ITR_COMMON_SHARED_API __attribute__ ((visibility ("default")))
 
 #endif

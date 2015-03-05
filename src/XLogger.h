@@ -23,6 +23,9 @@ namespace log4cxx
   class XLogger;
   typedef helpers::ObjectPtrT<XLogger> XLoggerPtr;
 
+  #pragma warning(push)
+  #pragma warning( disable: 4251 )
+
   /**
   A simple example showing Logger sub-classing. It shows the
   minimum steps necessary to implement one's {@link LoggerFactory}.
@@ -77,4 +80,6 @@ namespace log4cxx
     bool isWarnEnabled() const;
     bool isErrorEnabled() const;
   };
+
+  #pragma warning(pop) // disable: 4251
 }
