@@ -19,7 +19,56 @@
 
 #else // ITR_LOG4XX_PRESENT
 
+#ifdef __cplusplus
+
+#include <string>
+
+namespace ITR
+{
+  ITR_COMMON_SHARED_API std::string DemangleTypeName(const char *name);
+
+  class ITR_COMMON_SHARED_API LoggingInit
+  {
+  public:
+    LoggingInit();
+  };
+
+  extern ITR_COMMON_SHARED_API LoggingInit __LoggingInitObj;
+}
+
+#endif
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 typedef void * HLOGGER;
+
+ITR_COMMON_SHARED_API HLOGGER NewITRLogger(const char* name);
+ITR_COMMON_SHARED_API void FreeITRLogger(HLOGGER logger);
+ITR_COMMON_SHARED_API void ITRLogVisualization(HLOGGER logger, const char* message);
+ITR_COMMON_SHARED_API void ITRLogFlow(HLOGGER logger, const char* message);
+ITR_COMMON_SHARED_API void ITRLogMoreDetail(HLOGGER logger, const char* message);
+ITR_COMMON_SHARED_API void ITRLogDetail(HLOGGER logger, const char* message);
+ITR_COMMON_SHARED_API void ITRLogWarn(HLOGGER logger, const char* message);
+ITR_COMMON_SHARED_API void ITRLogError(HLOGGER logger, const char* message);
+ITR_COMMON_SHARED_API void ITRLogVisualizationForced(HLOGGER logger, const char* message);
+ITR_COMMON_SHARED_API void ITRLogFlowForced(HLOGGER logger, const char* message);
+ITR_COMMON_SHARED_API void ITRLogMoreDetailForced(HLOGGER logger, const char* message);
+ITR_COMMON_SHARED_API void ITRLogDetailForced(HLOGGER logger, const char* message);
+ITR_COMMON_SHARED_API void ITRLogWarnForced(HLOGGER logger, const char* message);
+ITR_COMMON_SHARED_API void ITRLogErrorForced(HLOGGER logger, const char* message);
+ITR_COMMON_SHARED_API int ITREnabledVisualization(HLOGGER logger);
+ITR_COMMON_SHARED_API int ITREnabledFlow(HLOGGER logger);
+ITR_COMMON_SHARED_API int ITREnabledMoreDetail(HLOGGER logger);
+ITR_COMMON_SHARED_API int ITREnabledDetail(HLOGGER logger);
+ITR_COMMON_SHARED_API int ITREnabledWarn(HLOGGER logger);
+ITR_COMMON_SHARED_API int ITREnabledError(HLOGGER logger);
+
+#ifdef __cplusplus
+}
+#endif
 
 #ifdef ITR_LOG_DISABLED
 
@@ -46,10 +95,9 @@ typedef void * HLOGGER;
 #define ITR_ENABLED_WARN_ACTUAL(logger) false
 #define ITR_ENABLED_ERROR_ACTUAL(logger) false
 
-#elif defined(__cplusplus) | !defined(ITR_LOGGING_C)
+#elif defined(__cplusplus) & !defined(ITR_LOGGING_C)
 
 // Logger getter macros
-
 #include <string>
 #include <typeinfo>
 #include "xlogger.h"
@@ -100,7 +148,6 @@ static inline log4cxx::XLoggerPtr __getITRLogger(const char *logger)
   typeinfo::ITRClassLogger typeinfo::__ITRLogger;
 
 // Log and test macros
-
 #define ITR_LOG_VISUALIZATION_FORCED(logger, message) \
   ::log4cxx::helpers::MessageBuffer oss_; \
   logger->forcedLog(::log4cxx::XLevel::getVisualization(), oss_.str(oss_ << message), LOG4CXX_LOCATION)
@@ -134,98 +181,85 @@ static inline log4cxx::XLoggerPtr __getITRLogger(const char *logger)
 
 #else // ITR_LOGGING_C
 
-// Logger getter macros
+#include <string.h>
+#include <stdlib.h>
 
-inline static HLOGGER __getITRLogger(const char *logger)\
-{\
-  return __ITRLogger;\
-};
+// Eval functions
+
+inline static int __evalITRLog1(int (*fun)(HLOGGER), HLOGGER logger, const char *name)
+{
+  if (logger == NULL)
+  {
+    logger = NewITRLogger(name);
+    int ret = fun(logger);
+    FreeITRLogger(logger);
+    return ret;
+  }
+
+   return fun(logger);
+}
+
+inline static void __evalITRLog2(void (*fun)(HLOGGER, const char*), HLOGGER logger,
+                          const char *name, const char *message, int freemsg)
+{
+  if (logger == NULL)
+  {
+    logger = NewITRLogger(name);
+    fun(logger, message);
+    FreeITRLogger(logger);
+  }
+
+  fun(logger, message);
+  if (freemsg)
+    free((char *)message);
+}
+
+// Logger getter macros
+#define ITR_GET_LOGGER_0() __getITRLogger(), NULL
+#define ITR_GET_LOGGER_1(logger) NULL, logger
 
 #define ITR_DECLARE_GLOBAL_LOGGER(name) \
   extern HLOGGER __ITRLogger;\
-  inline static log4cxx::XLoggerPtr __getDefaultITRLogger()\
+  inline static HLOGGER __getITRLogger()\
   {\
     return __ITRLogger;\
   };
 
-#define ITR_DECLARE_GLOBAL_LOGGER(name)
-#define ITR_INIT_GLOBAL_LOGGER(name)
+#define ITR_DEFINE_GLOBAL_LOGGER(name) \
+  HLOGGER __ITRLogger;
+
+#define ITR_INIT_GLOBAL_LOGGER(name)\
+  __ITRLogger = NewITRLogger(name);
+
+#define ITR_DESTROY_GLOBAL_LOGGER(logger)\
+  FreeITRLogger(__ITRLogger);
 
 // Log and test macros
-
-// CHECK-ME Test and verify
-
-#define ITR_ENABLED_VISUALIZATION_ACTUAL(logger) ITREnabledVisualization(logger)
-#define ITR_ENABLED_FLOW_ACTUAL(logger) ITREnabledFlow(logger)
-#define ITR_ENABLED_MOREDETAIL_ACTUAL(logger) ITREnabledMoreDetail(logger)
-#define ITR_ENABLED_DETAIL_ACTUAL(logger) ITREnabledDetail(logger)
-#define ITR_ENABLED_WARN_ACTUAL(logger) ITREnabledWarn(logger)
-#define ITR_ENABLED_ERROR_ACTUAL(logger) ITREnabledError(logger)
+#define ITR_ENABLED_VISUALIZATION_ACTUAL(logger) __evalITRLog1(ITREnabledVisualization, logger)
+#define ITR_ENABLED_FLOW_ACTUAL(logger) __evalITRLog1(ITREnabledFlow, logger)
+#define ITR_ENABLED_MOREDETAIL_ACTUAL(logger) __evalITRLog1(ITREnabledMoreDetail, logger)
+#define ITR_ENABLED_DETAIL_ACTUAL(logger) __evalITRLog1(ITREnabledDetail, logger)
+#define ITR_ENABLED_WARN_ACTUAL(logger) __evalITRLog1(ITREnabledWarn, logger)
+#define ITR_ENABLED_ERROR_ACTUAL(logger) __evalITRLog1(ITREnabledError, logger)
 
 #define ITR_LOG_VISUALIZATION_FORCED(logger, message) \
-  ITRLogVisualizationForced(logger, message);
+  __evalITRLog2(ITRLogVisualizationForced, logger, message);
 
 #define ITR_LOG_FLOW_FORCED(logger, message) \
-  ITRLogFlowForced(logger, message);
+  __evalITRLog2(ITRLogFlowForced, logger, message);
 
 #define ITR_LOG_MOREDETAIL_FORCED(logger, message) \
-  ITRLogMoreDetailForced(logger, message);
+  __evalITRLog2(ITRLogMoreDetailForced, logger, message);
 
 #define ITR_LOG_DETAIL_FORCED(logger, message) \
-  ITRLogDetailForced(logger, message);
+  __evalITRLog2(ITRLogDetailForced, logger, message);
 
 #define ITR_LOG_WARN_FORCED(logger, message) \
-  ITRLogWarnForced(logger, message);
+  __evalITRLog2(__evalITRLog2, ITRLogWarnForced(logger, message);
 
 #define ITR_LOG_ERROR_FORCED(logger, message) \
-  ITRLogErrorForced(logger, message);
+  __evalITRLog2(ITRLogErrorForced, logger, message);
 
-#endif
-
-#ifdef __cplusplus
-
-#include <string>
-
-namespace ITR
-{
-  ITR_COMMON_SHARED_API std::string DemangleTypeName(const char *name);
-
-  class ITR_COMMON_SHARED_API LoggingInit
-  {
-  public:
-    LoggingInit();
-  };
-
-  extern ITR_COMMON_SHARED_API LoggingInit __LoggingInitObj;
-}
-
-extern "C"
-{
-#endif
-  
-ITR_COMMON_SHARED_API void * NewITRLogger(const char* name);
-ITR_COMMON_SHARED_API void FreeITRLogger(HLOGGER logger);
-ITR_COMMON_SHARED_API void ITRLogVisualization(HLOGGER logger, const char* message);
-ITR_COMMON_SHARED_API void ITRLogFlow(HLOGGER logger, const char* message);
-ITR_COMMON_SHARED_API void ITRLogMoreDetail(HLOGGER logger, const char* message);
-ITR_COMMON_SHARED_API void ITRLogDetail(HLOGGER logger, const char* message);
-ITR_COMMON_SHARED_API void ITRLogWarn(HLOGGER logger, const char* message);
-ITR_COMMON_SHARED_API void ITRLogError(HLOGGER logger, const char* message);
-ITR_COMMON_SHARED_API void ITRLogVisualizationForced(HLOGGER logger, const char* message);
-ITR_COMMON_SHARED_API void ITRLogFlowForced(HLOGGER logger, const char* message);
-ITR_COMMON_SHARED_API void ITRLogMoreDetailForced(HLOGGER logger, const char* message);
-ITR_COMMON_SHARED_API void ITRLogDetailForced(HLOGGER logger, const char* message);
-ITR_COMMON_SHARED_API void ITRLogWarnForced(HLOGGER logger, const char* message);
-ITR_COMMON_SHARED_API void ITRLogErrorForced(HLOGGER logger, const char* message);
-ITR_COMMON_SHARED_API int ITREnabledVisualization(HLOGGER logger);
-ITR_COMMON_SHARED_API int ITREnabledFlow(HLOGGER logger);
-ITR_COMMON_SHARED_API int ITREnabledMoreDetail(HLOGGER logger);
-ITR_COMMON_SHARED_API int ITREnabledDetail(HLOGGER logger);
-ITR_COMMON_SHARED_API int ITREnabledWarn(HLOGGER logger);
-ITR_COMMON_SHARED_API int ITREnabledError(HLOGGER logger);
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif // ITR_LOG4XX_ABSENT
