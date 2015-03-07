@@ -248,37 +248,37 @@ extern "C"
   void ITRLogVisualizationForced(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    __ITR_LOG_VISUALIZATION_FORCED((*logger), message, false);
+    __ITR_LOG_VISUALIZATION_FORCED_ACTUAL((*logger), message, false);
   }
 
   void ITRLogFlowForced(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    __ITR_LOG_FLOW_FORCED((*logger), message, false);
+    __ITR_LOG_FLOW_FORCED_ACTUAL((*logger), message, false);
   }
 
   void ITRLogMoreDetailForced(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    __ITR_LOG_MOREDETAIL_FORCED((*logger), message, false);
+    __ITR_LOG_MOREDETAIL_FORCED_ACTUAL((*logger), message, false);
   }
 
   void ITRLogDetailForced(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    __ITR_LOG_DETAIL_FORCED((*logger), message, false);
+    __ITR_LOG_DETAIL_FORCED_ACTUAL((*logger), message, false);
   }
 
   void ITRLogWarnForced(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    __ITR_LOG_WARN_FORCED((*logger), message, false);
+    __ITR_LOG_WARN_FORCED_ACTUAL((*logger), message, false);
   }
 
   void ITRLogErrorForced(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    __ITR_LOG_ERROR_FORCED((*logger), message, false);
+    __ITR_LOG_ERROR_FORCED_ACTUAL((*logger), message, false);
   }
 
   int ITREnabledVisualization(HLOGGER logger_)
