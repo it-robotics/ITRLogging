@@ -211,108 +211,108 @@ extern "C"
   void ITRLogVisualization(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_VISUALIZATION_GENERIC((*logger), message, false);
+    __ITR_LOG_VISUALIZATION_GENERIC((*logger), message, false);
   }
 
   void ITRLogFlow(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_FLOW_GENERIC((*logger), message, false);
+    __ITR_LOG_FLOW_GENERIC((*logger), message, false);
   }
 
   void ITRLogMoreDetail(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_MOREDETAIL_GENERIC((*logger), message, false);
+    __ITR_LOG_MOREDETAIL_GENERIC((*logger), message, false);
   }
 
   void ITRLogDetail(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_DETAIL_GENERIC((*logger), message, false);
+    __ITR_LOG_DETAIL_GENERIC((*logger), message, false);
   }
 
   void ITRLogWarn(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_WARN_GENERIC((*logger), message, false);
+    __ITR_LOG_WARN_GENERIC((*logger), message, false);
   }
 
   void ITRLogError(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_ERROR_GENERIC((*logger), message, false);
+    __ITR_LOG_ERROR_GENERIC((*logger), message, false);
   }
 
   void ITRLogVisualizationForced(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_VISUALIZATION_FORCED((*logger), message, false);
+    __ITR_LOG_VISUALIZATION_FORCED((*logger), message, false);
   }
 
   void ITRLogFlowForced(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_FLOW_FORCED((*logger), message, false);
+    __ITR_LOG_FLOW_FORCED((*logger), message, false);
   }
 
   void ITRLogMoreDetailForced(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_MOREDETAIL_FORCED((*logger), message, false);
+    __ITR_LOG_MOREDETAIL_FORCED((*logger), message, false);
   }
 
   void ITRLogDetailForced(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_DETAIL_FORCED((*logger), message, false);
+    __ITR_LOG_DETAIL_FORCED((*logger), message, false);
   }
 
   void ITRLogWarnForced(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_WARN_FORCED((*logger), message, false);
+    __ITR_LOG_WARN_FORCED((*logger), message, false);
   }
 
   void ITRLogErrorForced(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_ERROR_FORCED((*logger), message, false);
+    __ITR_LOG_ERROR_FORCED((*logger), message, false);
   }
 
   int ITREnabledVisualization(HLOGGER logger_)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    return ITR_ENABLED_VISUALIZATION_ACTUAL((*logger));
+    return __ITR_ENABLED_VISUALIZATION_ACTUAL((*logger));
   }
 
   int ITREnabledFlow(HLOGGER logger_)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    return ITR_ENABLED_FLOW_ACTUAL((*logger));
+    return __ITR_ENABLED_FLOW_ACTUAL((*logger));
   }
 
   int ITREnabledMoreDetail(HLOGGER logger_)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    return ITR_ENABLED_MOREDETAIL_ACTUAL((*logger));
+    return __ITR_ENABLED_MOREDETAIL_ACTUAL((*logger));
   }
 
   int ITREnabledDetail(HLOGGER logger_)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    return ITR_ENABLED_DETAIL_ACTUAL((*logger));
+    return __ITR_ENABLED_DETAIL_ACTUAL((*logger));
   }
 
   int ITREnabledWarn(HLOGGER logger_)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    return ITR_ENABLED_WARN_ACTUAL((*logger));
+    return __ITR_ENABLED_WARN_ACTUAL((*logger));
   }
 
   int ITREnabledError(HLOGGER logger_)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    return ITR_ENABLED_ERROR_ACTUAL((*logger));
+    return __ITR_ENABLED_ERROR_ACTUAL((*logger));
   }
 }
