@@ -5,7 +5,7 @@
 #pragma once
 
 #include <log4cxx/level.h>
-#include "ITRCommon_Config.h"
+#include "libsdefs.h"
 
 namespace log4cxx
 {

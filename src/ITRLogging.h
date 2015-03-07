@@ -4,20 +4,7 @@
 
 #pragma once
 
-#include "ITRCommon_Config.h"
-
-#ifdef ITR_LOG4XX_ABSENT
-
-// TODO
-
-#define ITR_ENABLED_VISUALIZATION_ACTUAL(logger) true
-#define ITR_ENABLED_FLOW_ACTUAL(logger) true
-#define ITR_ENABLED_MOREDETAIL_ACTUAL(logger) true
-#define ITR_ENABLED_DETAIL_ACTUAL(logger) true
-#define ITR_ENABLED_WARN_ACTUAL(logger) true
-#define ITR_ENABLED_ERROR_ACTUAL(logger) true
-
-#else // ITR_LOG4XX_PRESENT
+#include "libsdefs.h"
 
 #ifdef __cplusplus
 
@@ -327,8 +314,6 @@ inline static char * __evalITRStr(const char *format, ...)
 #define ITR_LOG_ERROR_2(message, freemsg) ITR_LOG_ERROR_GENERIC(ITR_GET_LOGGER(), message, freemsg)
 
 #endif
-
-#endif // ITR_LOG4XX_ABSENT
 
 #define ITR_QUOTE(arg) #arg
 #define ITR_EXPAND_AND_QUOTE(x) ITR_QUOTE(x)

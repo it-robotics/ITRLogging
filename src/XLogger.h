@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "ITRCommon_Config.h"
+#include "libsdefs.h"
 #include <log4cxx/logger.h>
 #include <log4cxx/spi/loggerfactory.h>
 #include "xlevel.h"

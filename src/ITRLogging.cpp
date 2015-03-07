@@ -35,29 +35,76 @@ IMPLEMENT_LOG4CXX_LEVEL(XLevel)
 
 LoggingInit::LoggingInit()
 {
-  XFactory factory;
-  // TODO Portabilità su windows
-  // TODO Add fallbacks
-  // TODO Add variabile CONFIG_FILE, CONFIG_FILE_PATH, CONFIG_FILE_DELAY
-  int rc;
-  char str[1024];
-#ifdef __linux
-  readlink("/proc/self/exe", str, sizeof(str));
-#elif _WIN32
-  GetModuleFileNameA(NULL, str, sizeof(str));
-#endif
-
-  string path = str;
-  path = path.substr(0, path.find_last_of("/\\") + 1);
+  char * config_file_dir = NULL;
+  char * config_file = NULL;
+  char * config_file_delay = NULL;
 
 #ifdef _WIN32
-  rc = GetEnvironmentVariableA("", str, sizeof(str));
+  char config_file_dir_[1024] = { 0 };
+  char config_file_[1024] = { 0 };
+  char config_file_delay_[1024] = { 0 };
+  GetEnvironmentVariableA("ITR_LOGGING_CONFIG_FILE_DIR",
+    config_file_dir_, sizeof(config_file_dir_));
+  GetEnvironmentVariableA("ITR_LOGGING_CONFIG_FILE",
+    config_file_, sizeof(config_file_));
+  GetEnvironmentVariableA("ITR_LOGGING_CONFIG_FILE_DELAY",
+    config_file_delay_, sizeof(config_file_delay_));
+  if (strlen(config_file_dir_) != 0)
+    config_file_dir = config_file_dir_;
+  if (strlen(config_file_) != 0)
+    config_file = config_file_;
+  if (strlen(config_file_delay_) != 0)
+    config_file_delay = config_file_delay_;
 #else
-  char *test = getenv("");
-  (void)test;
+  config_file_dir = getenv("ITR_LOGGING_CONFIG_FILE_DIR");
+  config_file = getenv("ITR_LOGGING_CONFIG_FILE");
+  config_file_delay = getenv("ITR_LOGGING_CONFIG_FILE_DELAY");
 #endif
 
-  PropertyConfigurator::configureAndWatch(path + ITR_CONFIG_FILE, UPDATE_CONFIG_FILE_DELAY);
+  string configFileDir;
+
+  // TODO Mac and BSD
+  char exe[1024];
+  memset(exe, 0, sizeof(exe));
+#ifdef __linux
+  readlink("/proc/self/exe", exe, sizeof(str));
+#elif _WIN32
+  GetModuleFileNameA(NULL, exe, sizeof(exe));
+#endif
+
+  configFileDir = exe;
+  configFileDir = configFileDir.substr(0, configFileDir.find_last_of("\\/") + 1);
+
+  string configFile = ITR_CONFIG_FILE;
+  long configFileDelay = UPDATE_CONFIG_FILE_DELAY;
+
+  if (config_file_dir != NULL)
+  {
+    configFileDir = config_file_dir;
+    char last = *configFileDir.rbegin();
+#ifdef _WIN32
+    if (last != '\\')
+      configFileDir + '\\';
+#else // Unix
+    if (last != '/')
+      configFileDir + '/';
+#endif
+  }
+
+  if (config_file != NULL)
+    configFile = config_file;
+
+  if (config_file_delay != NULL)
+  {
+    char *invalid;
+    long delay = strtol(config_file_delay, &invalid, 10);
+    if (invalid != NULL)
+      configFileDelay = delay;
+  }
+
+  string configFilePath = configFileDir + configFile;
+
+  PropertyConfigurator::configureAndWatch(configFilePath, configFileDelay);
 }
 
 namespace ITR

@@ -5,6 +5,9 @@
 *.ncb
 *.sdf
 *.pch
+*.sln
+*.vcxproj*
+ITRBuildConf.xml
 Debug/
 Release/
 debug/
