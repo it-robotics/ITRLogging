@@ -5,10 +5,11 @@
 #pragma once
 
 #include <log4cxx/level.h>
+#include "ITRCommon_Config.h"
 
 namespace log4cxx
 {
-  class XLevel : public log4cxx::Level
+  class ITR_COMMON_SHARED_API XLevel : public log4cxx::Level
   {
     DECLARE_LOG4CXX_LEVEL(XLevel)
 

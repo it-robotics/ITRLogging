@@ -148,27 +148,27 @@ static inline log4cxx::XLoggerPtr __getITRLogger(const char *logger)
   typeinfo::ITRClassLogger typeinfo::__ITRLogger;
 
 // Log and test macros
-#define ITR_LOG_VISUALIZATION_FORCED(logger, message) \
+#define ITR_LOG_VISUALIZATION_FORCED(logger, message, freemsg) \
   ::log4cxx::helpers::MessageBuffer oss_; \
   logger->forcedLog(::log4cxx::XLevel::getVisualization(), oss_.str(oss_ << message), LOG4CXX_LOCATION)
 
-#define ITR_LOG_FLOW_FORCED(logger, message) \
+#define ITR_LOG_FLOW_FORCED(logger, message, freemsg) \
   ::log4cxx::helpers::MessageBuffer oss_; \
   logger->forcedLog(::log4cxx::XLevel::getFlow(), oss_.str(oss_ << message), LOG4CXX_LOCATION)
 
-#define ITR_LOG_MOREDETAIL_FORCED(logger, message) \
+#define ITR_LOG_MOREDETAIL_FORCED(logger, message, freemsg) \
   ::log4cxx::helpers::MessageBuffer oss_; \
   logger->forcedLog(::log4cxx::XLevel::getMoreDetail(), oss_.str(oss_ << message), LOG4CXX_LOCATION)
 
-#define ITR_LOG_DETAIL_FORCED(logger, message) \
+#define ITR_LOG_DETAIL_FORCED(logger, message, freemsg) \
   ::log4cxx::helpers::MessageBuffer oss_; \
   logger->forcedLog(::log4cxx::XLevel::getDetail(), oss_.str(oss_ << message), LOG4CXX_LOCATION)
 
-#define ITR_LOG_WARN_FORCED(logger, message) \
+#define ITR_LOG_WARN_FORCED(logger, message, freemsg) \
   ::log4cxx::helpers::MessageBuffer oss_; \
   logger->forcedLog(::log4cxx::XLevel::getWarn(), oss_.str(oss_ << message), LOG4CXX_LOCATION)
 
-#define ITR_LOG_ERROR_FORCED(logger, message) \
+#define ITR_LOG_ERROR_FORCED(logger, message, freemsg) \
   ::log4cxx::helpers::MessageBuffer oss_; \
   logger->forcedLog(::log4cxx::XLevel::getError(), oss_.str(oss_ << message), LOG4CXX_LOCATION)
 
@@ -179,10 +179,26 @@ static inline log4cxx::XLoggerPtr __getITRLogger(const char *logger)
 #define ITR_ENABLED_WARN_ACTUAL(logger) logger->isWarnEnabled()
 #define ITR_ENABLED_ERROR_ACTUAL(logger) logger->isErrorEnabled()
 
+// Counted macros
+#define ITR_LOG_VISUALIZATION_2(logger, message) ITR_LOG_VISUALIZATION_GENERIC(ITR_GET_LOGGER(logger), message, false)
+#define ITR_LOG_FLOW_2(logger, message) ITR_LOG_FLOW_GENERIC(ITR_GET_LOGGER(logger), message, false)
+#define ITR_LOG_MOREDETAIL_2(logger, message) ITR_LOG_MOREDETAIL_GENERIC(ITR_GET_LOGGER(logger), message, false)
+#define ITR_LOG_DETAIL_2(logger, message) ITR_LOG_DETAIL_GENERIC(ITR_GET_LOGGER(logger), message, false)
+#define ITR_LOG_WARN_2(logger, message) ITR_LOG_WARN_GENERIC(ITR_GET_LOGGER(logger), message, false)
+#define ITR_LOG_ERROR_2(logger, message) ITR_LOG_ERROR_GENERIC(ITR_GET_LOGGER(logger), message, false)
+
+#define ITR_LOG_VISUALIZATION_1(message) ITR_LOG_VISUALIZATION_GENERIC(ITR_GET_LOGGER(), message, false)
+#define ITR_LOG_FLOW_1(message) ITR_LOG_FLOW_GENERIC(ITR_GET_LOGGER(), message, false)
+#define ITR_LOG_MOREDETAIL_1(message) ITR_LOG_MOREDETAIL_GENERIC(ITR_GET_LOGGER(), message, false)
+#define ITR_LOG_DETAIL_1(message) ITR_LOG_DETAIL_GENERIC(ITR_GET_LOGGER(), message, false)
+#define ITR_LOG_WARN_1(message) ITR_LOG_WARN_GENERIC(ITR_GET_LOGGER(), message, false)
+#define ITR_LOG_ERROR_1(message) ITR_LOG_ERROR_GENERIC(ITR_GET_LOGGER(), message, false)
+
 #else // ITR_LOGGING_C
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 // Eval functions
 
@@ -214,9 +230,43 @@ inline static void __evalITRLog2(void (*fun)(HLOGGER, const char*), HLOGGER logg
     free((char *)message);
 }
 
+inline static char * __evalITRStr(const char *format, ...)
+{
+  va_list list;
+  va_start (list, format);
+  size_t size = vsprintf(NULL, format, list);
+  va_end(list);
+
+  char *ret = malloc(size + 1);
+
+  va_start (list, format);
+  vsprintf(ret, format, list);
+  va_end(list);
+
+  return ret;
+}
+
+#define _LSTR_1(string) string, 0
+#define _LSTR_2(format, _1) __evalITRStr(format, _1), 1
+#define _LSTR_3(format, _1, _2) __evalITRStr(format, _1, _2), 1
+#define _LSTR_4(format, _1, _2, _3) __evalITRStr(format, _1, _2, _3), 1
+#define _LSTR_5(format, _1, _2, _3, _4) __evalITRStr(format, _1, _2, _3, _4), 1
+#define _LSTR_6(format, _1, _2, _3, _4, _5) __evalITRStr(format, _1, _2, _3, _4, _5), 1
+#define _LSTR_7(format, _1, _2, _3, _4, _5, _6) __evalITRStr(format, _1, _2, _3, _4, _5, _6), 1
+#define _LSTR_8(format, _1, _2, _3, _4, _5, _6, _7) __evalITRStr(format, _1, _2, _3, _4, _5, _6, _7), 1
+#define _LSTR_9(format, _1, _2, _3, _4, _5, _6, _7, _8) __evalITRStr(format, _1, _2, _3, _4, _5, _6, _7, _8), 1
+#define _LSTR_10(format, _1, _2, _3, _4, _5, _6, _7, _8, _9) __evalITRStr(format, _1, _2, _3, _4, _5, _6, _7, _8, _9), 1
+#define _LSTR_11(format, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10) __evalITRStr(format, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10), 1
+#define _LSTR_12(format, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11) __evalITRStr(format, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11), 1
+#define _LSTR_13(format, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12) __evalITRStr(format, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12), 1
+#define _LSTR_14(format, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13) __evalITRStr(format, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13), 1
+#define _LSTR_15(format, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14) __evalITRStr(format, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14), 1
+#define _LSTR_16(format, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15) __evalITRStr(format, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15), 1
+#define _LSTR(...) ITR_EXPAND(ITR_CONCAT(_LSTR_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
+
 // Logger getter macros
 #define ITR_GET_LOGGER_0() __getITRLogger(), NULL
-#define ITR_GET_LOGGER_1(logger) NULL, logger
+#define ITR_GET_LOGGER_1(name) NULL, name
 
 #define ITR_DECLARE_GLOBAL_LOGGER(name) \
   extern HLOGGER __ITRLogger;\
@@ -235,30 +285,46 @@ inline static void __evalITRLog2(void (*fun)(HLOGGER, const char*), HLOGGER logg
   FreeITRLogger(__ITRLogger);
 
 // Log and test macros
-#define ITR_ENABLED_VISUALIZATION_ACTUAL(logger) __evalITRLog1(ITREnabledVisualization, logger)
-#define ITR_ENABLED_FLOW_ACTUAL(logger) __evalITRLog1(ITREnabledFlow, logger)
-#define ITR_ENABLED_MOREDETAIL_ACTUAL(logger) __evalITRLog1(ITREnabledMoreDetail, logger)
-#define ITR_ENABLED_DETAIL_ACTUAL(logger) __evalITRLog1(ITREnabledDetail, logger)
-#define ITR_ENABLED_WARN_ACTUAL(logger) __evalITRLog1(ITREnabledWarn, logger)
-#define ITR_ENABLED_ERROR_ACTUAL(logger) __evalITRLog1(ITREnabledError, logger)
+#define ITR_ENABLED_VISUALIZATION_ACTUAL(logger, name) __evalITRLog1(ITREnabledVisualization, logger, name)
+#define ITR_ENABLED_FLOW_ACTUAL(logger, name) __evalITRLog1(ITREnabledFlow, logger, name)
+#define ITR_ENABLED_MOREDETAIL_ACTUAL(logger, name) __evalITRLog1(ITREnabledMoreDetail, logger, name)
+#define ITR_ENABLED_DETAIL_ACTUAL(logger, name) __evalITRLog1(ITREnabledDetail, logger, name)
+#define ITR_ENABLED_WARN_ACTUAL(logger, name) __evalITRLog1(ITREnabledWarn, logger, name)
+#define ITR_ENABLED_ERROR_ACTUAL(logger, name) __evalITRLog1(ITREnabledError, logger, name)
 
-#define ITR_LOG_VISUALIZATION_FORCED(logger, message) \
-  __evalITRLog2(ITRLogVisualizationForced, logger, message);
+// freemsg*freemsg prevent from doing ITR_LOG_FLOW("logger", "string")
+#define ITR_LOG_VISUALIZATION_FORCED(logger, name, message, freemsg) \
+  __evalITRLog2(ITRLogVisualizationForced, logger, name, message, freemsg*freemsg);
 
-#define ITR_LOG_FLOW_FORCED(logger, message) \
-  __evalITRLog2(ITRLogFlowForced, logger, message);
+#define ITR_LOG_FLOW_FORCED(logger, name, message, freemsg) \
+  __evalITRLog2(ITRLogFlowForced, logger, name, message, freemsg*freemsg);
 
-#define ITR_LOG_MOREDETAIL_FORCED(logger, message) \
-  __evalITRLog2(ITRLogMoreDetailForced, logger, message);
+#define ITR_LOG_MOREDETAIL_FORCED(logger, name, message, freemsg) \
+  __evalITRLog2(ITRLogMoreDetailForced, logger, name, message, freemsg*freemsg);
 
-#define ITR_LOG_DETAIL_FORCED(logger, message) \
-  __evalITRLog2(ITRLogDetailForced, logger, message);
+#define ITR_LOG_DETAIL_FORCED(logger, name, message, freemsg) \
+  __evalITRLog2(ITRLogDetailForced, logger, name, message, freemsg*freemsg);
 
-#define ITR_LOG_WARN_FORCED(logger, message) \
-  __evalITRLog2(__evalITRLog2, ITRLogWarnForced(logger, message);
+#define ITR_LOG_WARN_FORCED(logger, name, message, freemsg) \
+  __evalITRLog2(ITRLogWarnForced, logger, name, message, freemsg*freemsg);
 
-#define ITR_LOG_ERROR_FORCED(logger, message) \
-  __evalITRLog2(ITRLogErrorForced, logger, message);
+#define ITR_LOG_ERROR_FORCED(logger, name, message, freemsg) \
+  __evalITRLog2(ITRLogErrorForced, logger, name, message, freemsg*freemsg);
+
+// Counted macros
+#define ITR_LOG_VISUALIZATION_3(logger, message, freemsg) ITR_LOG_VISUALIZATION_GENERIC(ITR_GET_LOGGER(logger), message, freemsg)
+#define ITR_LOG_FLOW_3(logger, message, freemsg) ITR_LOG_FLOW_GENERIC(ITR_GET_LOGGER(logger), message, freemsg)
+#define ITR_LOG_MOREDETAIL_3(logger, message, freemsg) ITR_LOG_MOREDETAIL_GENERIC(ITR_GET_LOGGER(logger), message, freemsg)
+#define ITR_LOG_DETAIL_3(logger, message, freemsg) ITR_LOG_DETAIL_GENERIC(ITR_GET_LOGGER(logger), message, freemsg)
+#define ITR_LOG_WARN_3(logger, message, freemsg) ITR_LOG_WARN_GENERIC(ITR_GET_LOGGER(logger), message, freemsg)
+#define ITR_LOG_ERROR_3(logger, message, freemsg) ITR_LOG_ERROR_GENERIC(ITR_GET_LOGGER(logger), message, freemsg)
+
+#define ITR_LOG_VISUALIZATION_2(message, freemsg) ITR_LOG_VISUALIZATION_GENERIC(ITR_GET_LOGGER(), message, freemsg)
+#define ITR_LOG_FLOW_2(message, freemsg) ITR_LOG_FLOW_GENERIC(ITR_GET_LOGGER(), message, freemsg)
+#define ITR_LOG_MOREDETAIL_2(message, freemsg) ITR_LOG_MOREDETAIL_GENERIC(ITR_GET_LOGGER(), message, freemsg)
+#define ITR_LOG_DETAIL_2(message, freemsg) ITR_LOG_DETAIL_GENERIC(ITR_GET_LOGGER(), message, freemsg)
+#define ITR_LOG_WARN_2(message, freemsg) ITR_LOG_WARN_GENERIC(ITR_GET_LOGGER(), message, freemsg)
+#define ITR_LOG_ERROR_2(message, freemsg) ITR_LOG_ERROR_GENERIC(ITR_GET_LOGGER(), message, freemsg)
 
 #endif
 
@@ -298,70 +364,78 @@ inline static void __evalITRLog2(void (*fun)(HLOGGER, const char*), HLOGGER logg
 
 #endif
 
-#define ITR_LOG_VISUALIZATION_GENERIC(logger, message) do {\
+#define ITR_ENABLED_VISUALIZATION_GENERIC(logger)\
+  ITR_ENABLED_VISUALIZATION_ACTUAL(logger)
+
+#define ITR_ENABLED_FLOW_GENERIC(logger)\
+  ITR_ENABLED_FLOW_ACTUAL(logger)
+
+#define ITR_ENABLED_MOREDETAIL_GENERIC(logger)\
+  ITR_ENABLED_MOREDETAIL_ACTUAL(logger)
+
+#define ITR_ENABLED_DETAIL_GENERIC(logger)\
+  ITR_ENABLED_DETAIL_ACTUAL(logger)
+
+#define ITR_ENABLED_WARN_GENERIC(logger)\
+  ITR_ENABLED_WARN_ACTUAL(logger)
+
+#define ITR_ENABLED_ERROR_GENERIC(logger)\
+  ITR_ENABLED_ERROR_ACTUAL(logger)
+
+#define ITR_LOG_VISUALIZATION_GENERIC(logger, message, freemsg) do {\
   if (ITR_ENABLED_VISUALIZATION_ACTUAL(logger)) {\
-    ITR_LOG_VISUALIZATION_FORCED(logger, message);\
+    ITR_LOG_VISUALIZATION_FORCED(logger, message, freemsg);\
   }} while (0)
 
-#define ITR_LOG_FLOW_GENERIC(logger, message) do {\
+#define ITR_LOG_FLOW_GENERIC(logger, message, freemsg) do {\
   if (ITR_ENABLED_FLOW_ACTUAL(logger)) {\
-    ITR_LOG_FLOW_FORCED(logger, message);\
+    ITR_LOG_FLOW_FORCED(logger, message, freemsg);\
   }} while (0)
 
-#define ITR_LOG_MOREDETAIL_GENERIC(logger, message) do {\
+#define ITR_LOG_MOREDETAIL_GENERIC(logger, message, freemsg) do {\
   if (ITR_ENABLED_MOREDETAIL_ACTUAL(logger)) {\
-    ITR_LOG_MOREDETAIL_FORCED(logger, message);\
+    ITR_LOG_MOREDETAIL_FORCED(logger, message, freemsg);\
   }} while (0)
 
-#define ITR_LOG_DETAIL_GENERIC(logger, message) do {\
+#define ITR_LOG_DETAIL_GENERIC(logger, message, freemsg) do {\
   if (ITR_ENABLED_DETAIL_ACTUAL(logger)) {\
-    ITR_LOG_DETAIL_FORCED(logger, message);\
+    ITR_LOG_DETAIL_FORCED(logger, message, freemsg);\
   }} while (0)
 
-#define ITR_LOG_WARN_GENERIC(logger, message) do {\
+#define ITR_LOG_WARN_GENERIC(logger, message, freemsg) do {\
   if (ITR_ENABLED_WARN_ACTUAL(logger)) {\
-    ITR_LOG_WARN_FORCED(logger, message);\
+    ITR_LOG_WARN_FORCED(logger, message, freemsg);\
   }} while (0)
 
-#define ITR_LOG_ERROR_GENERIC(logger, message) do {\
+#define ITR_LOG_ERROR_GENERIC(logger, message, freemsg) do {\
   if (ITR_ENABLED_ERROR_ACTUAL(logger)) {\
-    ITR_LOG_ERROR_FORCED(logger, message);\
+    ITR_LOG_ERROR_FORCED(logger, message, freemsg);\
   }} while (0)
 
+// Private common macros
 #define ITR_GET_LOGGER(...) ITR_EXPAND(ITR_CONCAT(ITR_GET_LOGGER_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 
-#define ITR_LOG_VISUALIZATION_2(logger, message) ITR_LOG_VISUALIZATION_GENERIC(ITR_GET_LOGGER(logger), message)
-#define ITR_LOG_FLOW_BEGIN_1(logger) ITR_LOG_FLOW_GENERIC(ITR_GET_LOGGER(logger), ITR_FUNC_DESC_BEGIN_STR)
-#define ITR_LOG_FLOW_END_1(logger) ITR_LOG_FLOW_GENERIC(ITR_GET_LOGGER(logger), ITR_FUNC_DESC_END_STR)
-#define ITR_LOG_FLOW_2(logger, message) ITR_LOG_FLOW_GENERIC(ITR_GET_LOGGER(logger), message)
-#define ITR_LOG_MOREDETAIL_2(message, logger) ITR_LOG_MOREDETAIL_GENERIC(ITR_GET_LOGGER(logger), message)
-#define ITR_LOG_DETAIL_2(message, logger) ITR_LOG_DETAIL_GENERIC(ITR_GET_LOGGER(logger), message)
-#define ITR_LOG_WARN_2(message, logger) ITR_LOG_WARN_GENERIC(ITR_GET_LOGGER(logger), message)
-#define ITR_LOG_ERROR_2(message, logger) ITR_LOG_ERROR_GENERIC(ITR_GET_LOGGER(logger), message)
+#define ITR_LOG_FLOW_BEGIN_1(logger) ITR_LOG_FLOW_GENERIC(ITR_GET_LOGGER(logger), ITR_FUNC_DESC_BEGIN_STR, false)
+#define ITR_LOG_FLOW_END_1(logger) ITR_LOG_FLOW_GENERIC(ITR_GET_LOGGER(logger), ITR_FUNC_DESC_END_STR, false)
 
-#define ITR_LOG_VISUALIZATION_1(message) ITR_LOG_VISUALIZATION_GENERIC(ITR_GET_LOGGER(), message)
-#define ITR_LOG_FLOW_BEGIN_0() ITR_LOG_FLOW_GENERIC(ITR_GET_LOGGER(), ITR_FUNC_DESC_BEGIN_STR)
-#define ITR_LOG_FLOW_END_0() ITR_LOG_FLOW_GENERIC(ITR_GET_LOGGER(), ITR_FUNC_DESC_END_STR)
-#define ITR_LOG_FLOW_1(message) ITR_LOG_FLOW_GENERIC(ITR_GET_LOGGER(), message)
-#define ITR_LOG_MOREDETAIL_1(message) ITR_LOG_MOREDETAIL_GENERIC(ITR_GET_LOGGER(), message)
-#define ITR_LOG_DETAIL_1(message) ITR_LOG_DETAIL_GENERIC(ITR_GET_LOGGER(), message)
-#define ITR_LOG_WARN_1(message) ITR_LOG_WARN_GENERIC(ITR_GET_LOGGER(), message)
-#define ITR_LOG_ERROR_1(message) ITR_LOG_ERROR_GENERIC(ITR_GET_LOGGER(), message)
+#define ITR_LOG_FLOW_BEGIN_0() ITR_LOG_FLOW_GENERIC(ITR_GET_LOGGER(), ITR_FUNC_DESC_BEGIN_STR, false)
+#define ITR_LOG_FLOW_END_0() ITR_LOG_FLOW_GENERIC(ITR_GET_LOGGER(), ITR_FUNC_DESC_END_STR, false)
 
-#define ITR_ENABLED_VISUALIZATION_1(logger) ITR_ENABLED_VISUALIZATION_ACTUAL(ITR_GET_LOGGER(logger))
-#define ITR_ENABLED_FLOW_1(logger) ITR_ENABLED_FLOW_ACTUAL(ITR_GET_LOGGER(logger))
-#define ITR_ENABLED_MOREDETAIL_1(logger) ITR_ENABLED_MOREDETAIL_ACTUAL(ITR_GET_LOGGER(logger))
-#define ITR_ENABLED_DETAIL_1(logger) ITR_ENABLED_DETAIL_ACTUAL(ITR_GET_LOGGER(logger))
-#define ITR_ENABLED_WARN_1(logger) ITR_ENABLED_WARN_ACTUAL(ITR_GET_LOGGER(logger))
-#define ITR_ENABLED_ERROR_1(logger) ITR_ENABLED_ERROR_ACTUAL(ITR_GET_LOGGER(logger))
+#define ITR_ENABLED_VISUALIZATION_1(logger) ITR_ENABLED_VISUALIZATION_GENERIC(ITR_GET_LOGGER(logger))
+#define ITR_ENABLED_FLOW_1(logger) ITR_ENABLED_FLOW_GENERIC(ITR_GET_LOGGER(logger))
+#define ITR_ENABLED_MOREDETAIL_1(logger) ITR_ENABLED_MOREDETAIL_GENERIC(ITR_GET_LOGGER(logger))
+#define ITR_ENABLED_DETAIL_1(logger) ITR_ENABLED_DETAIL_GENERIC(ITR_GET_LOGGER(logger))
+#define ITR_ENABLED_WARN_1(logger) ITR_ENABLED_WARN_GENERIC(ITR_GET_LOGGER(logger))
+#define ITR_ENABLED_ERROR_1(logger) ITR_ENABLED_ERROR_GENERIC(ITR_GET_LOGGER(logger))
 
-#define ITR_ENABLED_VISUALIZATION_0() ITR_ENABLED_VISUALIZATION_ACTUAL(ITR_GET_LOGGER())
-#define ITR_ENABLED_FLOW_0() ITR_ENABLED_FLOW_ACTUAL(ITR_GET_LOGGER())
-#define ITR_ENABLED_MOREDETAIL_0() ITR_ENABLED_MOREDETAIL_ACTUAL(ITR_GET_LOGGER())
-#define ITR_ENABLED_DETAIL_0() ITR_ENABLED_DETAILACTUAL(ITR_GET_LOGGER())
-#define ITR_ENABLED_WARN_0() ITR_ENABLED_WARN_ACTUAL(ITR_GET_LOGGER())
+#define ITR_ENABLED_VISUALIZATION_0() ITR_ENABLED_VISUALIZATION_GENERIC(ITR_GET_LOGGER())
+#define ITR_ENABLED_FLOW_0() ITR_ENABLED_FLOW_GENERIC(ITR_GET_LOGGER())
+#define ITR_ENABLED_MOREDETAIL_0() ITR_ENABLED_MOREDETAIL_GENERIC(ITR_GET_LOGGER())
+#define ITR_ENABLED_DETAIL_0() ITR_ENABLED_DETAIL_GENERIC(ITR_GET_LOGGER())
+#define ITR_ENABLED_WARN_0() ITR_ENABLED_WARN_GENERIC(ITR_GET_LOGGER())
 #define ITR_ENABLED_ERROR_0() ITR_ENABLED_ERROR_GENERIC(ITR_GET_LOGGER())
 
+// Public macros
 #define ITR_LOG_VISUALIZATION(...) ITR_EXPAND(ITR_CONCAT(ITR_LOG_VISUALIZATION_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 #define ITR_LOG_FLOW_BEGIN(...) ITR_EXPAND(ITR_CONCAT(ITR_LOG_FLOW_BEGIN_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 #define ITR_LOG_FLOW_END(...) ITR_EXPAND(ITR_CONCAT(ITR_LOG_FLOW_END_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))

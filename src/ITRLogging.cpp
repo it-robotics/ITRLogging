@@ -5,6 +5,7 @@
 #include "precmp.h"
 #include "ITRLogging.h"
 #include <fstream>
+#include <cstdlib>
 #include <log4cxx/basicconfigurator.h>
 #include <log4cxx/propertyconfigurator.h>
 #include "xfactory.h"
@@ -38,15 +39,24 @@ LoggingInit::LoggingInit()
   // TODO Portabilità su windows
   // TODO Add fallbacks
   // TODO Add variabile CONFIG_FILE, CONFIG_FILE_PATH, CONFIG_FILE_DELAY
+  int rc;
+  char str[1024];
 #ifdef __linux
-  char exe[256];
-  readlink("/proc/self/exe", exe, sizeof(exe));
-
-  string path = exe;
-  path = path.substr(0, path.find_last_of("/\\") + 1);
+  readlink("/proc/self/exe", str, sizeof(str));
 #elif _WIN32
-  string path = ".\\";
+  GetModuleFileNameA(NULL, str, sizeof(str));
 #endif
+
+  string path = str;
+  path = path.substr(0, path.find_last_of("/\\") + 1);
+
+#ifdef _WIN32
+  rc = GetEnvironmentVariableA("", str, sizeof(str));
+#else
+  char *test = getenv("");
+  (void)test;
+#endif
+
   PropertyConfigurator::configureAndWatch(path + ITR_CONFIG_FILE, UPDATE_CONFIG_FILE_DELAY);
 }
 
@@ -154,73 +164,73 @@ extern "C"
   void ITRLogVisualization(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_VISUALIZATION_GENERIC((*logger), message);
+    ITR_LOG_VISUALIZATION_GENERIC((*logger), message, false);
   }
 
   void ITRLogFlow(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_FLOW_GENERIC((*logger), message);
+    ITR_LOG_FLOW_GENERIC((*logger), message, false);
   }
 
   void ITRLogMoreDetail(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_MOREDETAIL_GENERIC((*logger), message);
+    ITR_LOG_MOREDETAIL_GENERIC((*logger), message, false);
   }
 
   void ITRLogDetail(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_DETAIL_GENERIC((*logger), message);
+    ITR_LOG_DETAIL_GENERIC((*logger), message, false);
   }
 
   void ITRLogWarn(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_WARN_GENERIC((*logger), message);
+    ITR_LOG_WARN_GENERIC((*logger), message, false);
   }
 
   void ITRLogError(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_ERROR_GENERIC((*logger), message);
+    ITR_LOG_ERROR_GENERIC((*logger), message, false);
   }
 
   void ITRLogVisualizationForced(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_VISUALIZATION_FORCED((*logger), message);
+    ITR_LOG_VISUALIZATION_FORCED((*logger), message, false);
   }
 
   void ITRLogFlowForced(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_FLOW_FORCED((*logger), message);
+    ITR_LOG_FLOW_FORCED((*logger), message, false);
   }
 
   void ITRLogMoreDetailForced(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_MOREDETAIL_FORCED((*logger), message);
+    ITR_LOG_MOREDETAIL_FORCED((*logger), message, false);
   }
 
   void ITRLogDetailForced(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_DETAIL_FORCED((*logger), message);
+    ITR_LOG_DETAIL_FORCED((*logger), message, false);
   }
 
   void ITRLogWarnForced(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_WARN_FORCED((*logger), message);
+    ITR_LOG_WARN_FORCED((*logger), message, false);
   }
 
   void ITRLogErrorForced(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    ITR_LOG_ERROR_FORCED((*logger), message);
+    ITR_LOG_ERROR_FORCED((*logger), message, false);
   }
 
   int ITREnabledVisualization(HLOGGER logger_)
