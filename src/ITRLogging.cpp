@@ -6,6 +6,7 @@
 #include "ITRLogging.h"
 #include <fstream>
 #include <cstdlib>
+#include <cstring>
 #include <log4cxx/basicconfigurator.h>
 #include <log4cxx/propertyconfigurator.h>
 #include "xfactory.h"
@@ -67,7 +68,7 @@ LoggingInit::LoggingInit()
   char exe[1024];
   memset(exe, 0, sizeof(exe));
 #ifdef __linux
-  readlink("/proc/self/exe", exe, sizeof(str));
+  readlink("/proc/self/exe", exe, sizeof(exe));
 #elif _WIN32
   GetModuleFileNameA(NULL, exe, sizeof(exe));
 #endif
