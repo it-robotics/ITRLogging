@@ -34,19 +34,19 @@ typedef void * HLOGGER;
 
 ITR_COMMON_SHARED_API HLOGGER NewITRLogger(const char* name);
 ITR_COMMON_SHARED_API void FreeITRLogger(HLOGGER logger);
-ITR_COMMON_SHARED_API void ITRLogVisualization(HLOGGER logger, const char* message);
+ITR_COMMON_SHARED_API void ITRLogMaxDetail(HLOGGER logger, const char* message);
 ITR_COMMON_SHARED_API void ITRLogFlow(HLOGGER logger, const char* message);
 ITR_COMMON_SHARED_API void ITRLogMoreDetail(HLOGGER logger, const char* message);
 ITR_COMMON_SHARED_API void ITRLogDetail(HLOGGER logger, const char* message);
 ITR_COMMON_SHARED_API void ITRLogWarn(HLOGGER logger, const char* message);
 ITR_COMMON_SHARED_API void ITRLogError(HLOGGER logger, const char* message);
-ITR_COMMON_SHARED_API void ITRLogVisualizationForced(HLOGGER logger, const char* message);
+ITR_COMMON_SHARED_API void ITRLogMaxDetailForced(HLOGGER logger, const char* message);
 ITR_COMMON_SHARED_API void ITRLogFlowForced(HLOGGER logger, const char* message);
 ITR_COMMON_SHARED_API void ITRLogMoreDetailForced(HLOGGER logger, const char* message);
 ITR_COMMON_SHARED_API void ITRLogDetailForced(HLOGGER logger, const char* message);
 ITR_COMMON_SHARED_API void ITRLogWarnForced(HLOGGER logger, const char* message);
 ITR_COMMON_SHARED_API void ITRLogErrorForced(HLOGGER logger, const char* message);
-ITR_COMMON_SHARED_API int ITREnabledVisualization(HLOGGER logger);
+ITR_COMMON_SHARED_API int ITREnabledMaxDetail(HLOGGER logger);
 ITR_COMMON_SHARED_API int ITREnabledFlow(HLOGGER logger);
 ITR_COMMON_SHARED_API int ITREnabledMoreDetail(HLOGGER logger);
 ITR_COMMON_SHARED_API int ITREnabledDetail(HLOGGER logger);
@@ -66,7 +66,7 @@ ITR_COMMON_SHARED_API int ITREnabledError(HLOGGER logger);
 #define __ITR_GET_LOGGER_0() logger
 #define __ITR_GET_LOGGER_1(logger) logger
 
-#define __ITR_LOG_VISUALIZATION_FORCED_ACTUAL __ITR_LOG_DISABLED
+#define __ITR_LOG_MAXDETAIL_FORCED_ACTUAL __ITR_LOG_DISABLED
 #define __ITR_LOG_FLOW_FORCED_ACTUAL __ITR_LOG_DISABLED
 #define __ITR_LOG_MOREDETAIL_FORCED_ACTUAL __ITR_LOG_DISABLED
 #define __ITR_LOG_DETAIL_FORCED_ACTUAL __ITR_LOG_DISABLED
@@ -75,7 +75,7 @@ ITR_COMMON_SHARED_API int ITREnabledError(HLOGGER logger);
 
 #define __ITR_LOG_DISABLED(logger, message)
 
-#define __ITR_ENABLED_VISUALIZATION_ACTUAL(logger) false
+#define __ITR_ENABLED_MAXDETAIL_ACTUAL(logger) false
 #define __ITR_ENABLED_FLOW_ACTUAL(logger) false
 #define __ITR_ENABLED_MOREDETAIL_ACTUAL(logger) false
 #define __ITR_ENABLED_DETAIL_ACTUAL(logger) false
@@ -135,9 +135,9 @@ static inline log4cxx::XLoggerPtr __getITRLogger(const char *logger)
 #define __ITR_GET_LOGGER_1(logger) __getITRLogger(logger)
 
 // Log and test macros
-#define __ITR_LOG_VISUALIZATION_FORCED_ACTUAL(logger, message, freemsg) \
+#define __ITR_LOG_MAXDETAIL_FORCED_ACTUAL(logger, message, freemsg) \
   ::log4cxx::helpers::MessageBuffer oss_; \
-  logger->forcedLog(::log4cxx::XLevel::getVisualization(), oss_.str(oss_ << message), LOG4CXX_LOCATION)
+  logger->forcedLog(::log4cxx::XLevel::getMaxDetail(), oss_.str(oss_ << message), LOG4CXX_LOCATION)
 
 #define __ITR_LOG_FLOW_FORCED_ACTUAL(logger, message, freemsg) \
   ::log4cxx::helpers::MessageBuffer oss_; \
@@ -159,7 +159,7 @@ static inline log4cxx::XLoggerPtr __getITRLogger(const char *logger)
   ::log4cxx::helpers::MessageBuffer oss_; \
   logger->forcedLog(::log4cxx::XLevel::getError(), oss_.str(oss_ << message), LOG4CXX_LOCATION)
 
-#define __ITR_ENABLED_VISUALIZATION_ACTUAL(logger) logger->isVisualizationEnabled()
+#define __ITR_ENABLED_MAXDETAIL_ACTUAL(logger) logger->isMaxDetailEnabled()
 #define __ITR_ENABLED_FLOW_ACTUAL(logger) logger->isFlowEnabled()
 #define __ITR_ENABLED_MOREDETAIL_ACTUAL(logger) logger->isMoreDetailEnabled()
 #define __ITR_ENABLED_DETAIL_ACTUAL(logger) logger->isDetailEnabled()
@@ -257,15 +257,15 @@ inline static char * __evalITRStr(const char *format, ...)
 #define __ITR_GET_LOGGER_1(name) NULL, name
 
 // Log and test macros
-#define __ITR_ENABLED_VISUALIZATION_ACTUAL(logger, name) __evalITRLog1(ITREnabledVisualization, logger, name)
+#define __ITR_ENABLED_MAXDETAIL_ACTUAL(logger, name) __evalITRLog1(ITREnabledMaxDetail, logger, name)
 #define __ITR_ENABLED_FLOW_ACTUAL(logger, name) __evalITRLog1(ITREnabledFlow, logger, name)
 #define __ITR_ENABLED_MOREDETAIL_ACTUAL(logger, name) __evalITRLog1(ITREnabledMoreDetail, logger, name)
 #define __ITR_ENABLED_DETAIL_ACTUAL(logger, name) __evalITRLog1(ITREnabledDetail, logger, name)
 #define __ITR_ENABLED_WARN_ACTUAL(logger, name) __evalITRLog1(ITREnabledWarn, logger, name)
 #define __ITR_ENABLED_ERROR_ACTUAL(logger, name) __evalITRLog1(ITREnabledError, logger, name)
 
-#define __ITR_LOG_VISUALIZATION_FORCED_ACTUAL(logger, name, message, freemsg) \
-  __evalITRLog2(ITRLogVisualizationForced, logger, name, message, freemsg);
+#define __ITR_LOG_MAXDETAIL_FORCED_ACTUAL(logger, name, message, freemsg) \
+  __evalITRLog2(ITRLogMaxDetailForced, logger, name, message, freemsg);
 
 #define __ITR_LOG_FLOW_FORCED_ACTUAL(logger, name, message, freemsg) \
   __evalITRLog2(ITRLogFlowForced, logger, name, message, freemsg);
@@ -284,28 +284,28 @@ inline static char * __evalITRStr(const char *format, ...)
 
 // Counted macros for log macros with variadic arguments
 // ex. ITR_LOG_DETAIL(logger, _LSTR(format, ...))
-#define __ITR_LOG_VISUALIZATION_4(logger, message, freemsg, dummy) __ITR_LOG_VISUALIZATION_GENERIC(__ITR_GET_LOGGER(logger), message, freemsg)
+#define __ITR_LOG_MAXDETAIL_4(logger, message, freemsg, dummy) __ITR_LOG_MAXDETAIL_GENERIC(__ITR_GET_LOGGER(logger), message, freemsg)
 #define __ITR_LOG_FLOW_4(logger, message, freemsg, dummy) __ITR_LOG_FLOW_GENERIC(__ITR_GET_LOGGER(logger), message, freemsg)
 #define __ITR_LOG_MOREDETAIL_4(logger, message, freemsg, dummy) __ITR_LOG_MOREDETAIL_GENERIC(__ITR_GET_LOGGER(logger), message, freemsg)
 #define __ITR_LOG_DETAIL_4(logger, message, freemsg, dummy) __ITR_LOG_DETAIL_GENERIC(__ITR_GET_LOGGER(logger), message, freemsg)
 #define __ITR_LOG_WARN_4(logger, message, freemsg, dummy) __ITR_LOG_WARN_GENERIC(__ITR_GET_LOGGER(logger), message, freemsg)
 #define __ITR_LOG_ERROR_4(logger, message, freemsg, dummy) __ITR_LOG_ERROR_GENERIC(__ITR_GET_LOGGER(logger), message, freemsg)
 
-#define __ITR_LOG_VISUALIZATION_3(message, freemsg, dummy) __ITR_LOG_VISUALIZATION_GENERIC(__ITR_GET_LOGGER(), message, freemsg)
+#define __ITR_LOG_MAXDETAIL_3(message, freemsg, dummy) __ITR_LOG_MAXDETAIL_GENERIC(__ITR_GET_LOGGER(), message, freemsg)
 #define __ITR_LOG_FLOW_3(message, freemsg, dummy) __ITR_LOG_FLOW_GENERIC(__ITR_GET_LOGGER(), message, freemsg)
 #define __ITR_LOG_MOREDETAIL_3(message, freemsg, dummy) __ITR_LOG_MOREDETAIL_GENERIC(__ITR_GET_LOGGER(), message, freemsg)
 #define __ITR_LOG_DETAIL_3(message, freemsg, dummy) __ITR_LOG_DETAIL_GENERIC(__ITR_GET_LOGGER(), message, freemsg)
 #define __ITR_LOG_WARN_3(message, freemsg, dummy) __ITR_LOG_WARN_GENERIC(__ITR_GET_LOGGER(), message, freemsg)
 #define __ITR_LOG_ERROR_3(message, freemsg, dummy) __ITR_LOG_ERROR_GENERIC(__ITR_GET_LOGGER(), message, freemsg)
 
-#define __ITR_LOG_VISUALIZATION_FORCED_4(logger, message, freemsg, dummy) __ITR_LOG_VISUALIZATION_FORCED_ACTUAL(__ITR_GET_LOGGER(logger), message, freemsg)
+#define __ITR_LOG_MAXDETAIL_FORCED_4(logger, message, freemsg, dummy) __ITR_LOG_MAXDETAIL_FORCED_ACTUAL(__ITR_GET_LOGGER(logger), message, freemsg)
 #define __ITR_LOG_FLOW_FORCED_4(logger, message, freemsg, dummy) __ITR_LOG_FLOW_FORCED_ACTUAL(__ITR_GET_LOGGER(logger), message, freemsg)
 #define __ITR_LOG_MOREDETAIL_FORCED_4(logger, message, freemsg, dummy) __ITR_LOG_MOREDETAIL_FORCED_ACTUAL(__ITR_GET_LOGGER(logger), message, freemsg)
 #define __ITR_LOG_DETAIL_FORCED_4(logger, message, freemsg, dummy) __ITR_LOG_DETAIL_FORCED_ACTUAL(__ITR_GET_LOGGER(logger), message, freemsg)
 #define __ITR_LOG_WARN_FORCED_4(logger, message, freemsg, dummy) __ITR_LOG_WARN_FORCED_ACTUAL(__ITR_GET_LOGGER(logger), message, freemsg)
 #define __ITR_LOG_ERROR_FORCED_4(logger, message, freemsg, dummy) __ITR_LOG_ERROR_FORCED_ACTUAL(__ITR_GET_LOGGER(logger), message, freemsg)
 
-#define __ITR_LOG_VISUALIZATION_FORCED_3(message, freemsg, dummy) __ITR_LOG_VISUALIZATION_FORCED_ACTUAL(__ITR_GET_LOGGER(), message, freemsg)
+#define __ITR_LOG_MAXDETAIL_FORCED_3(message, freemsg, dummy) __ITR_LOG_MAXDETAIL_FORCED_ACTUAL(__ITR_GET_LOGGER(), message, freemsg)
 #define __ITR_LOG_FLOW_FORCED_3(message, freemsg, dummy) __ITR_LOG_FLOW_FORCED_ACTUAL(__ITR_GET_LOGGER(), message, freemsg)
 #define __ITR_LOG_MOREDETAIL_FORCED_3(message, freemsg, dummy) __ITR_LOG_MOREDETAIL_FORCED_ACTUAL(__ITR_GET_LOGGER(), message, freemsg)
 #define __ITR_LOG_DETAIL_FORCED_3(message, freemsg, dummy) __ITR_LOG_DETAIL_FORCED_ACTUAL(__ITR_GET_LOGGER(), message, freemsg)
@@ -349,8 +349,8 @@ inline static char * __evalITRStr(const char *format, ...)
 #endif
 
 // Private common macros
-#define __ITR_ENABLED_VISUALIZATION_GENERIC(logger)\
-  __ITR_ENABLED_VISUALIZATION_ACTUAL(logger)
+#define __ITR_ENABLED_MAXDETAIL_GENERIC(logger)\
+  __ITR_ENABLED_MAXDETAIL_ACTUAL(logger)
 
 #define __ITR_ENABLED_FLOW_GENERIC(logger)\
   __ITR_ENABLED_FLOW_ACTUAL(logger)
@@ -367,9 +367,9 @@ inline static char * __evalITRStr(const char *format, ...)
 #define __ITR_ENABLED_ERROR_GENERIC(logger)\
   __ITR_ENABLED_ERROR_ACTUAL(logger)
 
-#define __ITR_LOG_VISUALIZATION_GENERIC(logger, message, freemsg) do {\
-  if (__ITR_ENABLED_VISUALIZATION_ACTUAL(logger)) {\
-    __ITR_LOG_VISUALIZATION_FORCED_ACTUAL(logger, message, freemsg);\
+#define __ITR_LOG_MAXDETAIL_GENERIC(logger, message, freemsg) do {\
+  if (__ITR_ENABLED_MAXDETAIL_ACTUAL(logger)) {\
+    __ITR_LOG_MAXDETAIL_FORCED_ACTUAL(logger, message, freemsg);\
   }} while (0)
 
 #define __ITR_LOG_FLOW_GENERIC(logger, message, freemsg) do {\
@@ -406,42 +406,42 @@ inline static char * __evalITRStr(const char *format, ...)
 #define __ITR_LOG_FLOW_BEGIN_0() __ITR_LOG_FLOW_GENERIC(__ITR_GET_LOGGER(), ITR_FUNC_DESC_BEGIN_STR, 0)
 #define __ITR_LOG_FLOW_END_0() __ITR_LOG_FLOW_GENERIC(__ITR_GET_LOGGER(), ITR_FUNC_DESC_END_STR, 0)
 
-#define __ITR_LOG_VISUALIZATION_2(logger, message) __ITR_LOG_VISUALIZATION_GENERIC(__ITR_GET_LOGGER(logger), message, 0)
+#define __ITR_LOG_MAXDETAIL_2(logger, message) __ITR_LOG_MAXDETAIL_GENERIC(__ITR_GET_LOGGER(logger), message, 0)
 #define __ITR_LOG_FLOW_2(logger, message) __ITR_LOG_FLOW_GENERIC(__ITR_GET_LOGGER(logger), message, 0)
 #define __ITR_LOG_MOREDETAIL_2(logger, message) __ITR_LOG_MOREDETAIL_GENERIC(__ITR_GET_LOGGER(logger), message, 0)
 #define __ITR_LOG_DETAIL_2(logger, message) __ITR_LOG_DETAIL_GENERIC(__ITR_GET_LOGGER(logger), message, 0)
 #define __ITR_LOG_WARN_2(logger, message) __ITR_LOG_WARN_GENERIC(__ITR_GET_LOGGER(logger), message, 0)
 #define __ITR_LOG_ERROR_2(logger, message) __ITR_LOG_ERROR_GENERIC(__ITR_GET_LOGGER(logger), message, 0)
 
-#define __ITR_LOG_VISUALIZATION_1(message) __ITR_LOG_VISUALIZATION_GENERIC(__ITR_GET_LOGGER(), message, 0)
+#define __ITR_LOG_MAXDETAIL_1(message) __ITR_LOG_MAXDETAIL_GENERIC(__ITR_GET_LOGGER(), message, 0)
 #define __ITR_LOG_FLOW_1(message) __ITR_LOG_FLOW_GENERIC(__ITR_GET_LOGGER(), message, 0)
 #define __ITR_LOG_MOREDETAIL_1(message) __ITR_LOG_MOREDETAIL_GENERIC(__ITR_GET_LOGGER(), message, 0)
 #define __ITR_LOG_DETAIL_1(message) __ITR_LOG_DETAIL_GENERIC(__ITR_GET_LOGGER(), message, 0)
 #define __ITR_LOG_WARN_1(message) __ITR_LOG_WARN_GENERIC(__ITR_GET_LOGGER(), message, 0)
 #define __ITR_LOG_ERROR_1(message) __ITR_LOG_ERROR_GENERIC(__ITR_GET_LOGGER(), message, 0)
 
-#define __ITR_LOG_VISUALIZATION_FORCED_2(logger, message) __ITR_LOG_VISUALIZATION_FORCED_ACTUAL(__ITR_GET_LOGGER(logger), message, 0)
+#define __ITR_LOG_MAXDETAIL_FORCED_2(logger, message) __ITR_LOG_MAXDETAIL_FORCED_ACTUAL(__ITR_GET_LOGGER(logger), message, 0)
 #define __ITR_LOG_FLOW_FORCED_2(logger, message) __ITR_LOG_FLOW_FORCED_ACTUAL(__ITR_GET_LOGGER(logger), message, 0)
 #define __ITR_LOG_MOREDETAIL_FORCED_2(logger, message) __ITR_LOG_MOREDETAIL_FORCED_ACTUAL(__ITR_GET_LOGGER(logger), message, 0)
 #define __ITR_LOG_DETAIL_FORCED_2(logger, message) __ITR_LOG_DETAIL_FORCED_ACTUAL(__ITR_GET_LOGGER(logger), message, 0)
 #define __ITR_LOG_WARN_FORCED_2(logger, message) __ITR_LOG_WARN_FORCED_ACTUAL(__ITR_GET_LOGGER(logger), message, 0)
 #define __ITR_LOG_ERROR_FORCED_2(logger, message) __ITR_LOG_ERROR_FORCED_ACTUAL(__ITR_GET_LOGGER(logger), message, 0)
 
-#define __ITR_LOG_VISUALIZATION_FORCED_1(message) __ITR_LOG_VISUALIZATION_FORCED_ACTUAL(__ITR_GET_LOGGER(), message, 0)
+#define __ITR_LOG_MAXDETAIL_FORCED_1(message) __ITR_LOG_MAXDETAIL_FORCED_ACTUAL(__ITR_GET_LOGGER(), message, 0)
 #define __ITR_LOG_FLOW_FORCED_1(message) __ITR_LOG_FLOW_FORCED_ACTUAL(__ITR_GET_LOGGER(), message, 0)
 #define __ITR_LOG_MOREDETAIL_FORCED_1(message) __ITR_LOG_MOREDETAIL_FORCED_ACTUAL(__ITR_GET_LOGGER(), message, 0)
 #define __ITR_LOG_DETAIL_FORCED_1(message) __ITR_LOG_DETAIL_FORCED_ACTUAL(__ITR_GET_LOGGER(), message, 0)
 #define __ITR_LOG_WARN_FORCED_1(message) __ITR_LOG_WARN_FORCED_ACTUAL(__ITR_GET_LOGGER(), message, 0)
 #define __ITR_LOG_ERROR_FORCED_1(message) __ITR_LOG_ERROR_FORCED_ACTUAL(__ITR_GET_LOGGER(), message, 0)
 
-#define __ITR_ENABLED_VISUALIZATION_1(logger) __ITR_ENABLED_VISUALIZATION_GENERIC(__ITR_GET_LOGGER(logger))
+#define __ITR_ENABLED_MAXDETAIL_1(logger) __ITR_ENABLED_MAXDETAIL_GENERIC(__ITR_GET_LOGGER(logger))
 #define __ITR_ENABLED_FLOW_1(logger) __ITR_ENABLED_FLOW_GENERIC(__ITR_GET_LOGGER(logger))
 #define __ITR_ENABLED_MOREDETAIL_1(logger) __ITR_ENABLED_MOREDETAIL_GENERIC(__ITR_GET_LOGGER(logger))
 #define __ITR_ENABLED_DETAIL_1(logger) __ITR_ENABLED_DETAIL_GENERIC(__ITR_GET_LOGGER(logger))
 #define __ITR_ENABLED_WARN_1(logger) __ITR_ENABLED_WARN_GENERIC(__ITR_GET_LOGGER(logger))
 #define __ITR_ENABLED_ERROR_1(logger) __ITR_ENABLED_ERROR_GENERIC(__ITR_GET_LOGGER(logger))
 
-#define __ITR_ENABLED_VISUALIZATION_0() __ITR_ENABLED_VISUALIZATION_GENERIC(__ITR_GET_LOGGER())
+#define __ITR_ENABLED_MAXDETAIL_0() __ITR_ENABLED_MAXDETAIL_GENERIC(__ITR_GET_LOGGER())
 #define __ITR_ENABLED_FLOW_0() __ITR_ENABLED_FLOW_GENERIC(__ITR_GET_LOGGER())
 #define __ITR_ENABLED_MOREDETAIL_0() __ITR_ENABLED_MOREDETAIL_GENERIC(__ITR_GET_LOGGER())
 #define __ITR_ENABLED_DETAIL_0() __ITR_ENABLED_DETAIL_GENERIC(__ITR_GET_LOGGER())
@@ -452,21 +452,21 @@ inline static char * __evalITRStr(const char *format, ...)
 #define ITR_LOG_FLOW_BEGIN(...) ITR_EXPAND(ITR_CONCAT(__ITR_LOG_FLOW_BEGIN_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 #define ITR_LOG_FLOW_END(...) ITR_EXPAND(ITR_CONCAT(__ITR_LOG_FLOW_END_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 
-#define ITR_LOG_VISUALIZATION(...) ITR_EXPAND(ITR_CONCAT(__ITR_LOG_VISUALIZATION_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
+#define ITR_LOG_MAXDETAIL(...) ITR_EXPAND(ITR_CONCAT(__ITR_LOG_MAXDETAIL_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 #define ITR_LOG_FLOW(...) ITR_EXPAND(ITR_CONCAT(__ITR_LOG_FLOW_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 #define ITR_LOG_MOREDETAIL(...) ITR_EXPAND(ITR_CONCAT(__ITR_LOG_MOREDETAIL_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 #define ITR_LOG_DETAIL(...) ITR_EXPAND(ITR_CONCAT(__ITR_LOG_DETAIL_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 #define ITR_LOG_WARN(...) ITR_EXPAND(ITR_CONCAT(__ITR_LOG_WARN_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 #define ITR_LOG_ERROR(...) ITR_EXPAND(ITR_CONCAT(__ITR_LOG_ERROR_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 
-#define ITR_ENABLED_VISUALIZATION(...) ITR_EXPAND(ITR_CONCAT(__ITR_ENABLED_VISUALIZATION_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
+#define ITR_ENABLED_MAXDETAIL(...) ITR_EXPAND(ITR_CONCAT(__ITR_ENABLED_MAXDETAIL_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 #define ITR_ENABLED_FLOW(...) ITR_EXPAND(ITR_CONCAT(__ITR_ENABLED_FLOW_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 #define ITR_ENABLED_MOREDETAIL(...) ITR_EXPAND(ITR_CONCAT(__ITR_ENABLED_MOREDETAIL_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 #define ITR_ENABLED_DETAIL(...) ITR_EXPAND(ITR_CONCAT(__ITR_ENABLED_DETAIL_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 #define ITR_ENABLED_WARN(...) ITR_EXPAND(ITR_CONCAT(__ITR_ENABLED_WARN_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 #define ITR_ENABLED_ERROR(...) ITR_EXPAND(ITR_CONCAT(__ITR_ENABLED_ERROR_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 
-#define ITR_LOG_VISUALIZATION_FORCED(...) ITR_EXPAND(ITR_CONCAT(__ITR_LOG_VISUALIZATION_FORCED_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
+#define ITR_LOG_MAXDETAIL_FORCED(...) ITR_EXPAND(ITR_CONCAT(__ITR_LOG_MAXDETAIL_FORCED_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 #define ITR_LOG_FLOW_FORCED(...) ITR_EXPAND(ITR_CONCAT(__ITR_LOG_FLOW_FORCED_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 #define ITR_LOG_MOREDETAIL_FORCED(...) ITR_EXPAND(ITR_CONCAT(__ITR_LOG_MOREDETAIL_FORCED_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 #define ITR_LOG_DETAIL_FORCED(...) ITR_EXPAND(ITR_CONCAT(__ITR_LOG_DETAIL_FORCED_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))

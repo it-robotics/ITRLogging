@@ -14,9 +14,9 @@ XLevel::XLevel(int level1, const LogString& name1, int syslogEquivalent1)
 {
 }
 
-LevelPtr XLevel::getVisualization() {
-  static const LevelPtr visualization(new XLevel(XLevel::VISUALIZATION_INT, LOG4CXX_STR("VISUALIZATION"), 7));
-  return visualization;
+LevelPtr XLevel::getMaxDetail() {
+  static const LevelPtr maxdetail(new XLevel(XLevel::MAXDETAIL_INT, LOG4CXX_STR("MAXDETAIL"), 7));
+  return maxdetail;
 }
 
 LevelPtr XLevel::getFlow() {
@@ -59,7 +59,7 @@ LevelPtr XLevel::toLevel(int val, const LevelPtr& defaultLevel)
 {
   switch(val)
   {
-  case VISUALIZATION_INT: return getVisualization();
+  case MAXDETAIL_INT: return getMaxDetail();
   case FLOW_INT: return getFlow();
   case MOREDETAIL_INT: return getMoreDetail();
   case DETAIL_INT: return getDetail();
@@ -77,8 +77,8 @@ LevelPtr XLevel::toLevelLS(const LogString& sArg, const LevelPtr& defaultLevel)
   }
 
   if (StringHelper::equalsIgnoreCase(sArg,
-    LOG4CXX_STR("VISUALIZATION"), LOG4CXX_STR("visualization"))) {
-      return getVisualization();
+    LOG4CXX_STR("MAXDETAIL"), LOG4CXX_STR("maxdetail"))) {
+      return getMaxDetail();
   }
 
   if (StringHelper::equalsIgnoreCase(sArg,

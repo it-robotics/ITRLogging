@@ -60,8 +60,8 @@ namespace log4cxx
     LogString getSuffix() const;
     void setSuffix(const LogString& suffix1);
 
-    void visualization(const LogString& message, const log4cxx::spi::LocationInfo& location);
-    void visualization(const LogString& message);
+    void maxdetail(const LogString& message, const log4cxx::spi::LocationInfo& location);
+    void maxdetail(const LogString& message);
     void flow(const LogString& message, const log4cxx::spi::LocationInfo& location);
     void flow(const LogString& message);
     void moredetail(const LogString& message, const log4cxx::spi::LocationInfo& location);
@@ -73,7 +73,7 @@ namespace log4cxx
     void error(const LogString& message, const log4cxx::spi::LocationInfo& location);
     void error(const LogString& message);
 
-    bool isVisualizationEnabled() const;
+    bool isMaxDetailEnabled() const;
     bool isFlowEnabled() const;
     bool isMoreDetailEnabled() const;
     bool isDetailEnabled() const;

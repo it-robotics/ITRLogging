@@ -61,29 +61,29 @@ void XLogger::setSuffix(const LogString& suffix1)
   this->suffix = suffix1;
 }
 
-void XLogger::visualization(const LogString& message, const LocationInfo& locationInfo)
+void XLogger::maxdetail(const LogString& message, const LocationInfo& locationInfo)
 {
-  if (repository->isDisabled(XLevel::VISUALIZATION_INT))
+  if (repository->isDisabled(XLevel::MAXDETAIL_INT))
   {
     return;
   }
 
-  if (XLevel::getVisualization()->isGreaterOrEqual(this->getEffectiveLevel()))
+  if (XLevel::getMaxDetail()->isGreaterOrEqual(this->getEffectiveLevel()))
   {
-    forcedLog(XLevel::getVisualization(), message, locationInfo);
+    forcedLog(XLevel::getMaxDetail(), message, locationInfo);
   }
 }
 
-void XLogger::visualization(const LogString& message)
+void XLogger::maxdetail(const LogString& message)
 {
-  if (repository->isDisabled(XLevel::VISUALIZATION_INT))
+  if (repository->isDisabled(XLevel::MAXDETAIL_INT))
   {
     return;
   }
 
-  if (XLevel::getVisualization()->isGreaterOrEqual(this->getEffectiveLevel()))
+  if (XLevel::getMaxDetail()->isGreaterOrEqual(this->getEffectiveLevel()))
   {
-    forcedLog(XLevel::getVisualization(), message, LocationInfo::getLocationUnavailable());
+    forcedLog(XLevel::getMaxDetail(), message, LocationInfo::getLocationUnavailable());
   }
 }
 
@@ -217,14 +217,14 @@ void XLogger::error(const LogString& message)
   }
 }
 
-bool XLogger::isVisualizationEnabled() const
+bool XLogger::isMaxDetailEnabled() const
 {
-  if(repository == 0 || repository->isDisabled(XLevel::VISUALIZATION_INT))
+  if(repository == 0 || repository->isDisabled(XLevel::MAXDETAIL_INT))
   {
     return false;
   }
 
-  return getEffectiveLevel()->toInt() <= XLevel::VISUALIZATION_INT;
+  return getEffectiveLevel()->toInt() <= XLevel::MAXDETAIL_INT;
 }
 
 bool XLogger::isFlowEnabled() const

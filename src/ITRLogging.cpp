@@ -209,10 +209,10 @@ extern "C"
     delete logger;
   }
 
-  void ITRLogVisualization(HLOGGER logger_, const char* message)
+  void ITRLogMaxDetail(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    __ITR_LOG_VISUALIZATION_GENERIC((*logger), message, false);
+    __ITR_LOG_MAXDETAIL_GENERIC((*logger), message, false);
   }
 
   void ITRLogFlow(HLOGGER logger_, const char* message)
@@ -245,10 +245,10 @@ extern "C"
     __ITR_LOG_ERROR_GENERIC((*logger), message, false);
   }
 
-  void ITRLogVisualizationForced(HLOGGER logger_, const char* message)
+  void ITRLogMaxDetailForced(HLOGGER logger_, const char* message)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    __ITR_LOG_VISUALIZATION_FORCED_ACTUAL((*logger), message, false);
+    __ITR_LOG_MAXDETAIL_FORCED_ACTUAL((*logger), message, false);
   }
 
   void ITRLogFlowForced(HLOGGER logger_, const char* message)
@@ -281,10 +281,10 @@ extern "C"
     __ITR_LOG_ERROR_FORCED_ACTUAL((*logger), message, false);
   }
 
-  int ITREnabledVisualization(HLOGGER logger_)
+  int ITREnabledMaxDetail(HLOGGER logger_)
   {
     ITRLogger *logger = (ITRLogger *)logger_;
-    return __ITR_ENABLED_VISUALIZATION_ACTUAL((*logger));
+    return __ITR_ENABLED_MAXDETAIL_ACTUAL((*logger));
   }
 
   int ITREnabledFlow(HLOGGER logger_)

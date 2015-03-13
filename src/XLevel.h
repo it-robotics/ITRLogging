@@ -16,7 +16,7 @@ namespace log4cxx
   public:
     enum
     {
-      VISUALIZATION_INT = 10,
+      MAXDETAIL_INT = 10,
       FLOW_INT = 20,
       MOREDETAIL_INT = 30,
       DETAIL_INT = 40,
@@ -24,7 +24,7 @@ namespace log4cxx
       ERROR_INT = 60
     };
 
-    static LevelPtr getVisualization();
+    static LevelPtr getMaxDetail();
     static LevelPtr getFlow();
     static LevelPtr getMoreDetail();
     static LevelPtr getDetail();
