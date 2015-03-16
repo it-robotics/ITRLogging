@@ -195,9 +195,12 @@ inline static void __evalITRLog2(void (*fun)(HLOGGER, const char*), HLOGGER logg
     logger = NewITRLogger(name);
     fun(logger, message);
     FreeITRLogger(logger);
+    goto Freemsg;
   }
 
   fun(logger, message);
+
+Freemsg:
   if (freemsg)
     free((char *)message);
 }
@@ -205,6 +208,7 @@ inline static void __evalITRLog2(void (*fun)(HLOGGER, const char*), HLOGGER logg
 inline static char * __evalITRStr(const char *format, ...)
 {
   va_list list;
+
   va_start (list, format);
   size_t size = vsprintf(NULL, format, list);
   va_end(list);
