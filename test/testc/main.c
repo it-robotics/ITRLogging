@@ -1,7 +1,19 @@
+#ifdef __cplusplus
+#define ITR_LOGGING_C
+#endif
+
 #include <ITRLogging.h>
 
-ITR_DECLARE_GLOBAL_LOGGER("MyLogger");
-ITR_DEFINE_GLOBAL_LOGGER("MyLogger");
+ITR_DECLARE_GLOBAL_LOGGER(MyLogger);
+ITR_DECLARE_GLOBAL_LOGGER(Other);
+
+ITR_DEFINE_STATIC_LOGGER(MyLogger);
+
+void foo()
+{
+  ITR_DEFINE_FUNCTION_LOGGER(Other);
+  ITR_LOG_MOREDETAIL("", _LSTR("", 1));
+}
 
 int main(int argc, char *argv[])
 {

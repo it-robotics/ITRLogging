@@ -94,44 +94,24 @@ static inline log4cxx::XLoggerPtr __getITRLogger(const char *logger)
   return log4cxx::XLogger::getLogger(logger);
 };
 
-#define ITR_DECLARE_GLOBAL_LOGGER(name) \
-  extern log4cxx::XLoggerPtr p_LocalLogger;\
-  inline static log4cxx::XLoggerPtr & __getITRLogger()\
-  {\
-    return p_LocalLogger;\
-  };\
-
-#define ITR_DEFINE_GLOBAL_LOGGER(name) \
-  log4cxx::XLoggerPtr p_LocalLogger = log4cxx::XLogger::getLogger(name);
-
 #define ITR_DEFINE_STATIC_LOGGER(name) \
-  static log4cxx::XLoggerPtr p_LocalLogger = log4cxx::XLogger::getLogger(name);\
-  inline static log4cxx::XLoggerPtr & __getITRLogger()\
-  {\
-    return p_LocalLogger;\
-  };
+  static log4cxx::XLoggerPtr __ITRDefaultLogger = log4cxx::XLogger::getLogger(#name);
 
 #define ITR_DECLARE_CLASS_LOGGER(typeinfo) \
-  class ITRClassLogger\
-  {\
-  public:\
-    log4cxx::LoggerPtr p_Logger;\
-    ITRClassLogger()\
+    static log4cxx::XLoggerPtr __getITRClassLogger()\
     {\
       std::string type = ::ITR::DemangleTypeName(typeid(typeinfo).name());\
-      p_Logger = log4cxx::XLogger::getLogger(type);\
+      return log4cxx::XLogger::getLogger(type);\
     }\
-  };\
-  static ITRClassLogger __ITRLogger;\
-  static inline log4cxx::XLoggerPtr & __getITRLogger()\
-  {\
-    return __ITRLogger.p_Logger;\
-  };
+  static log4cxx::XLoggerPtr __ITRDefaultLogger;
 
 #define ITR_DEFINE_CLASS_LOGGER(typeinfo) \
-  typeinfo::ITRClassLogger typeinfo::__ITRLogger;
+  log4cxx::XLoggerPtr typeinfo::__ITRDefaultLogger = __getITRClassLogger();
 
-#define __ITR_GET_LOGGER_0() __getITRLogger()
+#define ITR_DEFINE_FUNCTION_LOGGER(name) \
+  static log4cxx::XLoggerPtr __ITRDefaultLogger = __getITRLogger(#name);
+
+#define __ITR_GET_LOGGER_0() __ITRDefaultLogger
 #define __ITR_GET_LOGGER_1(logger) __getITRLogger(logger)
 
 // Log and test macros
@@ -205,6 +185,9 @@ Freemsg:
     free((char *)message);
 }
 
+#pragma warning(push)
+#pragma warning( disable: 4996 )
+
 inline static char * __evalITRStr(const char *format, ...)
 {
   va_list list;
@@ -221,6 +204,8 @@ inline static char * __evalITRStr(const char *format, ...)
 
   return ret;
 }
+
+#pragma warning(pop) // disable: 4996
 
 #define __LSTR_1(string) string, 0, 0
 #define __LSTR_2(format, _1) __evalITRStr(format, _1), 1, 1
@@ -242,22 +227,23 @@ inline static char * __evalITRStr(const char *format, ...)
 
 // Logger getter macros
 #define ITR_DECLARE_GLOBAL_LOGGER(name) \
-  extern HLOGGER __ITRLogger;\
-  inline static HLOGGER __getITRLogger()\
-  {\
-    return __ITRLogger;\
-  };
+  HLOGGER __ITRLogger_##name ;
 
-#define ITR_DEFINE_GLOBAL_LOGGER(name) \
-  HLOGGER __ITRLogger;
+#define ITR_DEFINE_STATIC_LOGGER(name) \
+  extern HLOGGER __ITRLogger_##name;\
+  static HLOGGER *__ITRDefaultLogger = &__ITRLogger_##name;
 
-#define ITR_INIT_GLOBAL_LOGGER(name)\
-  __ITRLogger = NewITRLogger(name);
+#define ITR_DEFINE_FUNCTION_LOGGER(name) \
+  extern HLOGGER __ITRLogger_##name;\
+  static HLOGGER *__ITRDefaultLogger = &__ITRLogger_##name;
 
-#define ITR_DESTROY_GLOBAL_LOGGER(logger)\
-  FreeITRLogger(__ITRLogger);
+#define ITR_INIT_GLOBAL_LOGGER(name) \
+  __ITRLogger_##name = NewITRLogger(name);
 
-#define __ITR_GET_LOGGER_0() __getITRLogger(), NULL
+#define ITR_DESTROY_GLOBAL_LOGGER(logger) \
+  FreeITRLogger(__ITRLogger_##name);
+
+#define __ITR_GET_LOGGER_0() *__ITRDefaultLogger, NULL
 #define __ITR_GET_LOGGER_1(name) NULL, name
 
 // Log and test macros
@@ -353,53 +339,59 @@ inline static char * __evalITRStr(const char *format, ...)
 #endif
 
 // Private common macros
-#define __ITR_ENABLED_MAXDETAIL_GENERIC(logger)\
-  __ITR_ENABLED_MAXDETAIL_ACTUAL(logger)
+#define __ITR_ENABLED_MAXDETAIL_GENERIC(logger) \
+  ITR_EXPAND(__ITR_ENABLED_MAXDETAIL_ACTUAL(logger))
 
-#define __ITR_ENABLED_FLOW_GENERIC(logger)\
-  __ITR_ENABLED_FLOW_ACTUAL(logger)
+#define __ITR_ENABLED_FLOW_GENERIC(logger) \
+  ITR_EXPAND(__ITR_ENABLED_FLOW_ACTUAL(logger))
 
-#define __ITR_ENABLED_MOREDETAIL_GENERIC(logger)\
-  __ITR_ENABLED_MOREDETAIL_ACTUAL(logger)
+#define __ITR_ENABLED_MOREDETAIL_GENERIC(logger) \
+  ITR_EXPAND(__ITR_ENABLED_MOREDETAIL_ACTUAL(logger))
 
-#define __ITR_ENABLED_DETAIL_GENERIC(logger)\
-  __ITR_ENABLED_DETAIL_ACTUAL(logger)
+#define __ITR_ENABLED_DETAIL_GENERIC(logger) \
+  ITR_EXPAND(__ITR_ENABLED_DETAIL_ACTUAL(logger))
 
-#define __ITR_ENABLED_WARN_GENERIC(logger)\
-  __ITR_ENABLED_WARN_ACTUAL(logger)
+#define __ITR_ENABLED_WARN_GENERIC(logger) \
+  ITR_EXPAND(__ITR_ENABLED_WARN_ACTUAL(logger))
 
-#define __ITR_ENABLED_ERROR_GENERIC(logger)\
-  __ITR_ENABLED_ERROR_ACTUAL(logger)
+#define __ITR_ENABLED_ERROR_GENERIC(logger) \
+  ITR_EXPAND(__ITR_ENABLED_ERROR_ACTUAL(logger))
 
-#define __ITR_LOG_MAXDETAIL_GENERIC(logger, message, freemsg) do {\
+#define __ITR_LOG_MAXDETAIL_GENERIC(logger, message, freemsg) ITR_EXPAND(\
+  do {\
   if (__ITR_ENABLED_MAXDETAIL_ACTUAL(logger)) {\
     __ITR_LOG_MAXDETAIL_FORCED_ACTUAL(logger, message, freemsg);\
-  }} while (0)
+  }} while (0))
 
-#define __ITR_LOG_FLOW_GENERIC(logger, message, freemsg) do {\
+#define __ITR_LOG_FLOW_GENERIC(logger, message, freemsg) ITR_EXPAND(\
+  do {\
   if (__ITR_ENABLED_FLOW_ACTUAL(logger)) {\
     __ITR_LOG_FLOW_FORCED_ACTUAL(logger, message, freemsg);\
-  }} while (0)
+  }} while (0))
 
-#define __ITR_LOG_MOREDETAIL_GENERIC(logger, message, freemsg) do {\
+#define __ITR_LOG_MOREDETAIL_GENERIC(logger, message, freemsg) ITR_EXPAND(\
+  do {\
   if (__ITR_ENABLED_MOREDETAIL_ACTUAL(logger)) {\
     __ITR_LOG_MOREDETAIL_FORCED_ACTUAL(logger, message, freemsg);\
-  }} while (0)
+  }} while (0))
 
-#define __ITR_LOG_DETAIL_GENERIC(logger, message, freemsg) do {\
+#define __ITR_LOG_DETAIL_GENERIC(logger, message, freemsg) ITR_EXPAND(\
+  do {\
   if (__ITR_ENABLED_DETAIL_ACTUAL(logger)) {\
     __ITR_LOG_DETAIL_FORCED_ACTUAL(logger, message, freemsg);\
-  }} while (0)
+  }} while (0))
 
-#define __ITR_LOG_WARN_GENERIC(logger, message, freemsg) do {\
+#define __ITR_LOG_WARN_GENERIC(logger, message, freemsg) ITR_EXPAND(\
+  do {\
   if (__ITR_ENABLED_WARN_ACTUAL(logger)) {\
     __ITR_LOG_WARN_FORCED_ACTUAL(logger, message, freemsg);\
-  }} while (0)
+  }} while (0))
 
-#define __ITR_LOG_ERROR_GENERIC(logger, message, freemsg) do {\
+#define __ITR_LOG_ERROR_GENERIC(logger, message, freemsg) do ITR_EXPAND(\
+  {\
   if (__ITR_ENABLED_ERROR_ACTUAL(logger)) {\
     __ITR_LOG_ERROR_FORCED_ACTUAL(logger, message, freemsg);\
-  }} while (0)
+  }} while (0))
 
 // Private counted macros
 #define __ITR_GET_LOGGER(...) ITR_EXPAND(ITR_CONCAT(__ITR_GET_LOGGER_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
