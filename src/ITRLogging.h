@@ -87,7 +87,7 @@ ITR_COMMON_SHARED_API int ITREnabledError(HLOGGER logger);
 // Logger getter macros
 #include <string>
 #include <typeinfo>
-#include "xlogger.h"
+#include "XLogger.h"
 
 static inline log4cxx::XLoggerPtr __getITRLogger(const char *logger)
 {

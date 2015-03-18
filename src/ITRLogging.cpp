@@ -9,9 +9,9 @@
 #include <cstring>
 #include <log4cxx/basicconfigurator.h>
 #include <log4cxx/propertyconfigurator.h>
-#include "xfactory.h"
-#include "xlogger.h"
-#include "xlevel.h"
+#include "XFactory.h"
+#include "XLogger.h"
+#include "XLevel.h"
 
 #ifdef __linux__
 #include <unistd.h>

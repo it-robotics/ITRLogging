@@ -7,8 +7,8 @@
 #include "libsdefs.h"
 #include <log4cxx/logger.h>
 #include <log4cxx/spi/loggerfactory.h>
-#include "xlevel.h"
-#include "xfactory.h"
+#include "XLevel.h"
+#include "XFactory.h"
 
 namespace log4cxx
 {
