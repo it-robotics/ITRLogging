@@ -59,12 +59,40 @@ ITR_COMMON_SHARED_API int ITREnabledError(HLOGGER logger);
 
 #ifdef ITR_LOG_DISABLED
 
-#define ITR_DECLARE_GLOBAL_LOGGER(logger)
-#define ITR_DEFINE_GLOBAL_LOGGER(logger)
+#if __cplusplus & !defined(ITR_LOGGING_C)
+
 #define ITR_DEFINE_STATIC_LOGGER(logger)
+#define ITR_DECLARE_CLASS_LOGGER(logger)
+#define ITR_DEFINE_CLASS_LOGGER(logger)
+#define ITR_DEFINE_FUNCTION_LOGGER(logger)
+
+#else // ITR_LOGGING_C
+
+#define ITR_DECLARE_GLOBAL_LOGGER(logger)
+#define ITR_DEFINE_STATIC_LOGGER(logger)
+#define ITR_DEFINE_FUNCTION_LOGGER(logger)
+#define ITR_INIT_GLOBAL_LOGGER(logger)
+#define ITR_DESTROY_GLOBAL_LOGGER(logger)
+
+#endif
+
+#if __cplusplus & !defined(ITR_LOGGING_C)
 
 #define __ITR_GET_LOGGER_0() logger
 #define __ITR_GET_LOGGER_1(logger) logger
+
+#define __ITR_LOG_DISABLED(logger, message, freemsg)
+#define __ITR_ENABLED_DISABLED(logger) false
+
+#else // ITR_LOGGING_C
+
+#define __ITR_GET_LOGGER_0() logger, dummy
+#define __ITR_GET_LOGGER_1(logger) logger, dummy
+
+#define __ITR_LOG_DISABLED(logger, name, message, freemsg)
+#define __ITR_ENABLED_DISABLED(logger, name) 0
+
+#endif
 
 #define __ITR_LOG_MAXDETAIL_FORCED_ACTUAL __ITR_LOG_DISABLED
 #define __ITR_LOG_FLOW_FORCED_ACTUAL __ITR_LOG_DISABLED
@@ -73,14 +101,12 @@ ITR_COMMON_SHARED_API int ITREnabledError(HLOGGER logger);
 #define __ITR_LOG_WARN_FORCED_ACTUAL __ITR_LOG_DISABLED
 #define __ITR_LOG_ERROR_FORCED_ACTUAL __ITR_LOG_DISABLED
 
-#define __ITR_LOG_DISABLED(logger, message)
-
-#define __ITR_ENABLED_MAXDETAIL_ACTUAL(logger) false
-#define __ITR_ENABLED_FLOW_ACTUAL(logger) false
-#define __ITR_ENABLED_MOREDETAIL_ACTUAL(logger) false
-#define __ITR_ENABLED_DETAIL_ACTUAL(logger) false
-#define __ITR_ENABLED_WARN_ACTUAL(logger) false
-#define __ITR_ENABLED_ERROR_ACTUAL(logger) false
+#define __ITR_ENABLED_MAXDETAIL_ACTUAL __ITR_ENABLED_DISABLED
+#define __ITR_ENABLED_FLOW_ACTUAL __ITR_ENABLED_DISABLED
+#define __ITR_ENABLED_MOREDETAIL_ACTUAL __ITR_ENABLED_DISABLED
+#define __ITR_ENABLED_DETAIL_ACTUAL __ITR_ENABLED_DISABLED
+#define __ITR_ENABLED_WARN_ACTUAL __ITR_ENABLED_DISABLED
+#define __ITR_ENABLED_ERROR_ACTUAL __ITR_ENABLED_DISABLED
 
 #elif defined(__cplusplus) & !defined(ITR_LOGGING_C)
 
@@ -148,6 +174,7 @@ static inline log4cxx::XLoggerPtr __getITRLogger(const char *logger)
 
 #else // ITR_LOGGING_C
 
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>

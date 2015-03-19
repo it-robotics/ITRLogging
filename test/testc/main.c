@@ -12,11 +12,15 @@ ITR_DEFINE_STATIC_LOGGER(MyLogger);
 void foo()
 {
   ITR_DEFINE_FUNCTION_LOGGER(Other);
+  ITR_ENABLED_MOREDETAIL();
   ITR_LOG_MOREDETAIL("", _LSTR("", 1));
 }
 
 int main(int argc, char *argv[])
 {
+  (void)argc;
+  (void)argv;
+
   int test = ITR_ENABLED_MOREDETAIL();
   (void)test;
 

@@ -8,8 +8,9 @@ ITR_DEFINE_CLASS_LOGGER(Test);
 
 void Test::foo()
 {
-	ITR_DEFINE_FUNCTION_LOGGER(MyLogger);
-	ITR_ENABLED_MOREDETAIL();
+  ITR_DEFINE_FUNCTION_LOGGER(MyLogger);
+  bool test = ITR_ENABLED_MOREDETAIL();
+  (void)test;
 }
 
 int main(int argc, char *argv[])
@@ -21,6 +22,6 @@ int main(int argc, char *argv[])
   (void)test;
   ITR_LOG_MOREDETAIL("Hello" << "");
   ITR_LOG_FLOW_FORCED("Hello" << "");
-  ITR_ENABLED_MOREDETAIL("");
+  test = ITR_ENABLED_MOREDETAIL("");
   return 0;
 }
