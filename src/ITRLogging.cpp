@@ -13,8 +13,9 @@
 #include "XLogger.h"
 #include "XLevel.h"
 
-#ifdef __linux__
+#ifdef __unix
 #include <unistd.h>
+#include <wordexp.h>
 #endif
 
 using namespace std;
@@ -66,6 +67,19 @@ LoggingInit::LoggingInit()
   config_file_dir = getenv("ITR_LOGGING_CONFIG_FILE_DIR");
   config_file = getenv("ITR_LOGGING_CONFIG_FILE");
   config_file_delay = getenv("ITR_LOGGING_CONFIG_FILE_DELAY");
+
+  char config_file_dir_expanded[1024] = { 0 };
+  if (config_file_dir != NULL)
+  {
+    wordexp_t exp;
+    wordexp(config_file_dir, &exp, 0);
+    if (exp.we_wordc == 1)
+    {
+      strncpy(config_file_dir_expanded, *exp.we_wordv, sizeof(config_file_dir_expanded));
+      config_file_dir = config_file_dir_expanded;
+    }
+    wordfree(&exp);
+  }
 #endif
 
   string configFileDir;
@@ -91,10 +105,10 @@ LoggingInit::LoggingInit()
     char last = *configFileDir.rbegin();
 #ifdef _WIN32
     if (last != '\\')
-      configFileDir + '\\';
+      configFileDir = configFileDir + '\\';
 #else // Unix
     if (last != '/')
-      configFileDir + '/';
+      configFileDir = configFileDir + '/';
 #endif
   }
 
