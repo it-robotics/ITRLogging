@@ -234,6 +234,7 @@ inline static char * __evalITRStr(const char *format, ...)
 
 #pragma warning(pop) // disable: 4996
 
+// Integer 0 or 1 is boolean for "freemsg". The second integer is needed but it's dummy
 #define __LSTR_1(string) string, 0, 0
 #define __LSTR_2(format, _1) __evalITRStr(format, _1), 1, 1
 #define __LSTR_3(format, _1, _2) __evalITRStr(format, _1, _2), 1, 1
@@ -338,20 +339,18 @@ inline static char * __evalITRStr(const char *format, ...)
 #define ITR_CONCAT(x, y) __ITR_CONCAT(x, y)
 #define ITR_AUGMENTER(...) unused, __VA_ARGS__
 
-#ifdef __GNUC__
-
-#define ITR_TUPLE_SIZE(...) __ITR_TUPLE_SIZE(0, ## __VA_ARGS__, 32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0)
-#define __ITR_TUPLE_SIZE(_0,_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11,_12,_13,_14,_15,_16,_17,_18,_19,_20,_21,_22,_23,_24,_25,_26,_27,_28,_29,_30,_31,_32,N,...) N
-
-#endif // __GNUC__
-
 #ifdef _MSC_VER
 
 #define __ITR_TUPLE_SIZE(_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11,_12,_13,_14,_15,_16,_17,_18,_19,_20,_21,_22,_23,_24,_25,_26,_27,_28,_29,_30,_31,_32,VAL,...) VAL
 #define ITR_TUPLE_SIZE_1(...) ITR_EXPAND(__ITR_TUPLE_SIZE(__VA_ARGS__,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0))
 #define ITR_TUPLE_SIZE(...) ITR_TUPLE_SIZE_1(ITR_AUGMENTER(__VA_ARGS__))
 
-#endif // _MSC_VER
+#else // Others
+
+#define ITR_TUPLE_SIZE(...) __ITR_TUPLE_SIZE(0, ## __VA_ARGS__, 32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0)
+#define __ITR_TUPLE_SIZE(_0,_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11,_12,_13,_14,_15,_16,_17,_18,_19,_20,_21,_22,_23,_24,_25,_26,_27,_28,_29,_30,_31,_32,N,...) N
+
+#endif
 
 #if defined(__cplusplus) & !defined(ITR_LOGGING_C)
 
@@ -360,7 +359,7 @@ inline static char * __evalITRStr(const char *format, ...)
 #define __ITR_FUNC_DESC_BEGIN_STR __FUNCTION__ << "() begins"
 #define __ITR_FUNC_DESC_END_STR __FUNCTION__ << "() ends"
 
-#else // GCC
+#else // Others
 
 #define __ITR_FUNC_DESC_BEGIN_STR __PRETTY_FUNCTION__ << " begins"
 #define __ITR_FUNC_DESC_END_STR __PRETTY_FUNCTION__ << " ends"
@@ -368,6 +367,9 @@ inline static char * __evalITRStr(const char *format, ...)
 #endif
 
 #define __ITR_FLOW_NEED_FREE 0
+
+#define __ITR_BEGIN_STR_ACTUAL __ITR_FUNC_DESC_BEGIN_STR
+#define __ITR_END_STR_ACTUAL __ITR_FUNC_DESC_END_STR
 
 #else // ITR_LOGGING_C
 
@@ -377,13 +379,17 @@ inline static char * __evalITRStr(const char *format, ...)
 #define __ITR_FUNC_DESC_END_STR __FUNCTION__ "() ends"
 #define __ITR_FLOW_NEED_FREE 0
 
-#else // GCC
+#else // Others
 
 #define __ITR_FUNC_DESC_BEGIN_STR __evalITRStr("%s%s", __FUNCTION__, "() begins")
 #define __ITR_FUNC_DESC_END_STR __evalITRStr("%s%s", __FUNCTION__, "() begins")
 #define __ITR_FLOW_NEED_FREE 1
 
 #endif
+
+// The second __ITR_FLOW_NEED_FREE is needed but it's just dummy
+#define __ITR_BEGIN_STR_ACTUAL __ITR_FUNC_DESC_BEGIN_STR, __ITR_FLOW_NEED_FREE, __ITR_FLOW_NEED_FREE
+#define __ITR_END_STR_ACTUAL __ITR_FUNC_DESC_END_STR, __ITR_FLOW_NEED_FREE, __ITR_FLOW_NEED_FREE
 
 #endif
 
@@ -535,3 +541,6 @@ inline static char * __evalITRStr(const char *format, ...)
 #define ITR_LOG_DETAIL_FORCED(...) ITR_EXPAND(ITR_CONCAT(__ITR_LOG_DETAIL_FORCED_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 #define ITR_LOG_WARN_FORCED(...) ITR_EXPAND(ITR_CONCAT(__ITR_LOG_WARN_FORCED_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 #define ITR_LOG_ERROR_FORCED(...) ITR_EXPAND(ITR_CONCAT(__ITR_LOG_ERROR_FORCED_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
+
+#define ITR_BEGIN_STR __ITR_BEGIN_STR_ACTUAL
+#define ITR_END_STR __ITR_END_STR_ACTUAL

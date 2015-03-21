@@ -9,6 +9,8 @@ void foo3()
 {
   ITR_LOG_FLOW_BEGIN();
   ITR_LOG_FLOW_BEGIN("module2_other");
+  ITR_LOG_DETAIL(ITR_BEGIN_STR);
+  ITR_LOG_DETAIL("module2_other", ITR_BEGIN_STR);
 
   printf("Enabled MAXDETAIL module2 = %s\n", ITR_ENABLED_MAXDETAIL() ? "True" : "False");
   printf("Enabled FLOW module2 = %s\n", ITR_ENABLED_FLOW() ? "True" : "False");
@@ -54,4 +56,6 @@ void foo3()
 
   ITR_LOG_FLOW_END();
   ITR_LOG_FLOW_END("module2_other");
+  ITR_LOG_DETAIL(ITR_END_STR);
+  ITR_LOG_DETAIL("module2_other", ITR_END_STR);
 }

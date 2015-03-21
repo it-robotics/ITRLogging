@@ -11,6 +11,8 @@ void Class2::foo3()
 {
   ITR_LOG_FLOW_BEGIN();
   ITR_LOG_FLOW_BEGIN("NS2.Class2Other");
+  ITR_LOG_DETAIL(ITR_BEGIN_STR);
+  ITR_LOG_DETAIL("NS2.Class2Other", ITR_BEGIN_STR);
 
   cout << "Enabled MAXDETAIL Class2 = " << (ITR_ENABLED_MAXDETAIL() ? "True" : "False") << endl;
   cout << "Enabled FLOW Class2 = " << (ITR_ENABLED_FLOW() ? "True" : "False") << endl;
@@ -56,4 +58,6 @@ void Class2::foo3()
 
   ITR_LOG_FLOW_END();
   ITR_LOG_FLOW_END("NS2.Class2Other");
+  ITR_LOG_DETAIL(ITR_END_STR);
+  ITR_LOG_DETAIL("NS2.Class2Other", ITR_END_STR);
 }
