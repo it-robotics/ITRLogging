@@ -1,31 +1,35 @@
-#ifdef __cplusplus
-#define ITR_LOGGING_C
-#endif
-
 #include <ITRLogging.h>
+#include "module1.h"
+#include "module2.h"
 
-ITR_DECLARE_GLOBAL_LOGGER(MyLogger);
-ITR_DECLARE_GLOBAL_LOGGER(Other);
-
-ITR_DEFINE_STATIC_LOGGER(MyLogger);
-
-void foo()
-{
-  ITR_DEFINE_FUNCTION_LOGGER(Other);
-  ITR_ENABLED_MOREDETAIL();
-  ITR_LOG_MOREDETAIL("", _LSTR("", 1));
-}
+// All global loggers have to be defined and inited in a executable
+// or shared library main(). To be used, a global logger need a static
+// entry point with ITR_DEFINE_STATIC_LOGGER
+ITR_DEFINE_GLOBAL_LOGGER(module1);
+ITR_DEFINE_GLOBAL_LOGGER(module1_cust);
+ITR_DEFINE_GLOBAL_LOGGER(module1_func);
+ITR_DEFINE_GLOBAL_LOGGER(module2);
+ITR_DEFINE_GLOBAL_LOGGER(module2_other);
 
 int main(int argc, char *argv[])
 {
   (void)argc;
   (void)argv;
 
-  int test = ITR_ENABLED_MOREDETAIL();
-  (void)test;
+  ITR_INIT_GLOBAL_LOGGER(module1);
+  ITR_INIT_GLOBAL_LOGGER(module1_cust);
+  ITR_INIT_GLOBAL_LOGGER(module1_func);
+  ITR_INIT_GLOBAL_LOGGER(module2);
+  ITR_INIT_GLOBAL_LOGGER(module2_other);
 
-  ITR_LOG_MOREDETAIL("", _LSTR("", 1));
-  ITR_LOG_MOREDETAIL(_LSTR("", 1));
-  ITR_ENABLED_MOREDETAIL("");
+  foo1();
+  foo3();
+
+  ITR_DESTROY_GLOBAL_LOGGER(module1);
+  ITR_DESTROY_GLOBAL_LOGGER(module1_cust);
+  ITR_DESTROY_GLOBAL_LOGGER(module1_func);
+  ITR_DESTROY_GLOBAL_LOGGER(module2);
+  ITR_DESTROY_GLOBAL_LOGGER(module2_other);
+
   return 0;
 }
