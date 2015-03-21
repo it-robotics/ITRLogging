@@ -108,6 +108,9 @@ ITR_COMMON_SHARED_API int ITREnabledError(HLOGGER logger);
 #define __ITR_ENABLED_WARN_ACTUAL __ITR_ENABLED_DISABLED
 #define __ITR_ENABLED_ERROR_ACTUAL __ITR_ENABLED_DISABLED
 
+#define __ITR_BEGIN_STR_ACTUAL dummy
+#define __ITR_END_STR_ACTUAL dummy
+
 #elif defined(__cplusplus) & !defined(ITR_LOGGING_C)
 
 // Logger getter macros
@@ -171,6 +174,23 @@ static inline log4cxx::XLoggerPtr __getITRLogger(const char *logger)
 #define __ITR_ENABLED_DETAIL_ACTUAL(logger) logger->isDetailEnabled()
 #define __ITR_ENABLED_WARN_ACTUAL(logger) logger->isWarnEnabled()
 #define __ITR_ENABLED_ERROR_ACTUAL(logger) logger->isErrorEnabled()
+
+// Begin/end macros
+#ifdef _MSC_VER
+
+#define __ITR_FUNC_DESC_BEGIN_STR __FUNCTION__ << "() begins"
+#define __ITR_FUNC_DESC_END_STR __FUNCTION__ << "() ends"
+
+#else // Others
+
+#define __ITR_FUNC_DESC_BEGIN_STR __PRETTY_FUNCTION__ << " begins"
+#define __ITR_FUNC_DESC_END_STR __PRETTY_FUNCTION__ << " ends"
+
+#endif
+
+#define __ITR_FLOW_NEED_FREE 0
+#define __ITR_BEGIN_STR_ACTUAL __ITR_FUNC_DESC_BEGIN_STR
+#define __ITR_END_STR_ACTUAL __ITR_FUNC_DESC_END_STR
 
 #else // ITR_LOGGING_C
 
@@ -330,6 +350,25 @@ inline static char * __evalITRStr(const char *format, ...)
 #define __ITR_LOG_WARN_FORCED_3(message, freemsg, dummy) __ITR_LOG_WARN_FORCED_GENERIC(__ITR_GET_LOGGER(), message, freemsg)
 #define __ITR_LOG_ERROR_FORCED_3(message, freemsg, dummy) __ITR_LOG_ERROR_FORCED_GENERIC(__ITR_GET_LOGGER(), message, freemsg)
 
+// Begin/end macros
+#ifdef _MSC_VER
+
+#define __ITR_FUNC_DESC_BEGIN_STR __FUNCTION__ "() begins"
+#define __ITR_FUNC_DESC_END_STR __FUNCTION__ "() ends"
+#define __ITR_FLOW_NEED_FREE 0
+
+#else // Others
+
+#define __ITR_FUNC_DESC_BEGIN_STR __evalITRStr("%s%s", __FUNCTION__, "() begins")
+#define __ITR_FUNC_DESC_END_STR __evalITRStr("%s%s", __FUNCTION__, "() begins")
+#define __ITR_FLOW_NEED_FREE 1
+
+#endif
+
+// The second __ITR_FLOW_NEED_FREE is needed but it's just dummy
+#define __ITR_BEGIN_STR_ACTUAL __ITR_FUNC_DESC_BEGIN_STR, __ITR_FLOW_NEED_FREE, __ITR_FLOW_NEED_FREE
+#define __ITR_END_STR_ACTUAL __ITR_FUNC_DESC_END_STR, __ITR_FLOW_NEED_FREE, __ITR_FLOW_NEED_FREE
+
 #endif
 
 #define ITR_QUOTE(arg) #arg
@@ -349,47 +388,6 @@ inline static char * __evalITRStr(const char *format, ...)
 
 #define ITR_TUPLE_SIZE(...) __ITR_TUPLE_SIZE(0, ## __VA_ARGS__, 32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0)
 #define __ITR_TUPLE_SIZE(_0,_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11,_12,_13,_14,_15,_16,_17,_18,_19,_20,_21,_22,_23,_24,_25,_26,_27,_28,_29,_30,_31,_32,N,...) N
-
-#endif
-
-#if defined(__cplusplus) & !defined(ITR_LOGGING_C)
-
-#ifdef _MSC_VER
-
-#define __ITR_FUNC_DESC_BEGIN_STR __FUNCTION__ << "() begins"
-#define __ITR_FUNC_DESC_END_STR __FUNCTION__ << "() ends"
-
-#else // Others
-
-#define __ITR_FUNC_DESC_BEGIN_STR __PRETTY_FUNCTION__ << " begins"
-#define __ITR_FUNC_DESC_END_STR __PRETTY_FUNCTION__ << " ends"
-
-#endif
-
-#define __ITR_FLOW_NEED_FREE 0
-
-#define __ITR_BEGIN_STR_ACTUAL __ITR_FUNC_DESC_BEGIN_STR
-#define __ITR_END_STR_ACTUAL __ITR_FUNC_DESC_END_STR
-
-#else // ITR_LOGGING_C
-
-#ifdef _MSC_VER
-
-#define __ITR_FUNC_DESC_BEGIN_STR __FUNCTION__ "() begins"
-#define __ITR_FUNC_DESC_END_STR __FUNCTION__ "() ends"
-#define __ITR_FLOW_NEED_FREE 0
-
-#else // Others
-
-#define __ITR_FUNC_DESC_BEGIN_STR __evalITRStr("%s%s", __FUNCTION__, "() begins")
-#define __ITR_FUNC_DESC_END_STR __evalITRStr("%s%s", __FUNCTION__, "() begins")
-#define __ITR_FLOW_NEED_FREE 1
-
-#endif
-
-// The second __ITR_FLOW_NEED_FREE is needed but it's just dummy
-#define __ITR_BEGIN_STR_ACTUAL __ITR_FUNC_DESC_BEGIN_STR, __ITR_FLOW_NEED_FREE, __ITR_FLOW_NEED_FREE
-#define __ITR_END_STR_ACTUAL __ITR_FUNC_DESC_END_STR, __ITR_FLOW_NEED_FREE, __ITR_FLOW_NEED_FREE
 
 #endif
 
