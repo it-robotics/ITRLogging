@@ -68,7 +68,7 @@ ITR_COMMON_SHARED_API int ITREnabledError(HLOGGER logger);
 
 #else // ITR_LOGGING_C
 
-#define ITR_DECLARE_GLOBAL_LOGGER(logger)
+#define ITR_DEFINE_GLOBAL_LOGGER(logger)
 #define ITR_DEFINE_STATIC_LOGGER(logger)
 #define ITR_DEFINE_FUNCTION_LOGGER(logger)
 #define ITR_INIT_GLOBAL_LOGGER(logger)
@@ -355,13 +355,35 @@ inline static char * __evalITRStr(const char *format, ...)
 
 #if defined(__cplusplus) & !defined(ITR_LOGGING_C)
 
-#define ITR_FUNC_DESC_BEGIN_STR __FUNCTION__ << "() begins"
-#define ITR_FUNC_DESC_END_STR __FUNCTION__ << "() ends"
+#ifdef _MSC_VER
+
+#define __ITR_FUNC_DESC_BEGIN_STR __FUNCTION__ << "() begins"
+#define __ITR_FUNC_DESC_END_STR __FUNCTION__ << "() ends"
+
+#else // GCC
+
+#define __ITR_FUNC_DESC_BEGIN_STR __PRETTY_FUNCTION__ << " begins"
+#define __ITR_FUNC_DESC_END_STR __PRETTY_FUNCTION__ << " ends"
+
+#endif
+
+#define __ITR_FLOW_NEED_FREE 0
 
 #else // ITR_LOGGING_C
 
-#define ITR_FUNC_DESC_BEGIN_STR __FUNCTION__ "() begins"
-#define ITR_FUNC_DESC_END_STR __FUNCTION__ "() ends"
+#ifdef _MSC_VER
+
+#define __ITR_FUNC_DESC_BEGIN_STR __FUNCTION__ "() begins"
+#define __ITR_FUNC_DESC_END_STR __FUNCTION__ "() ends"
+#define __ITR_FLOW_NEED_FREE 0
+
+#else // GCC
+
+#define __ITR_FUNC_DESC_BEGIN_STR __evalITRStr("%s%s", __FUNCTION__, "() begins")
+#define __ITR_FUNC_DESC_END_STR __evalITRStr("%s%s", __FUNCTION__, "() begins")
+#define __ITR_FLOW_NEED_FREE 1
+
+#endif
 
 #endif
 
@@ -441,11 +463,11 @@ inline static char * __evalITRStr(const char *format, ...)
 // Private counted macros
 #define __ITR_GET_LOGGER(...) ITR_EXPAND(ITR_CONCAT(__ITR_GET_LOGGER_, ITR_TUPLE_SIZE(__VA_ARGS__))(__VA_ARGS__))
 
-#define __ITR_LOG_FLOW_BEGIN_1(logger) __ITR_LOG_FLOW_GENERIC(__ITR_GET_LOGGER(logger), ITR_FUNC_DESC_BEGIN_STR, 0)
-#define __ITR_LOG_FLOW_END_1(logger) __ITR_LOG_FLOW_GENERIC(__ITR_GET_LOGGER(logger), ITR_FUNC_DESC_END_STR, 0)
+#define __ITR_LOG_FLOW_BEGIN_1(logger) __ITR_LOG_FLOW_GENERIC(__ITR_GET_LOGGER(logger), __ITR_FUNC_DESC_BEGIN_STR, __ITR_FLOW_NEED_FREE)
+#define __ITR_LOG_FLOW_END_1(logger) __ITR_LOG_FLOW_GENERIC(__ITR_GET_LOGGER(logger), __ITR_FUNC_DESC_END_STR, __ITR_FLOW_NEED_FREE)
 
-#define __ITR_LOG_FLOW_BEGIN_0() __ITR_LOG_FLOW_GENERIC(__ITR_GET_LOGGER(), ITR_FUNC_DESC_BEGIN_STR, 0)
-#define __ITR_LOG_FLOW_END_0() __ITR_LOG_FLOW_GENERIC(__ITR_GET_LOGGER(), ITR_FUNC_DESC_END_STR, 0)
+#define __ITR_LOG_FLOW_BEGIN_0() __ITR_LOG_FLOW_GENERIC(__ITR_GET_LOGGER(), __ITR_FUNC_DESC_BEGIN_STR, __ITR_FLOW_NEED_FREE)
+#define __ITR_LOG_FLOW_END_0() __ITR_LOG_FLOW_GENERIC(__ITR_GET_LOGGER(), __ITR_FUNC_DESC_END_STR, __ITR_FLOW_NEED_FREE)
 
 #define __ITR_LOG_MAXDETAIL_2(logger, message) __ITR_LOG_MAXDETAIL_GENERIC(__ITR_GET_LOGGER(logger), message, 0)
 #define __ITR_LOG_FLOW_2(logger, message) __ITR_LOG_FLOW_GENERIC(__ITR_GET_LOGGER(logger), message, 0)
