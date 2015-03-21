@@ -42,16 +42,22 @@ LoggingInit::LoggingInit()
 
 #ifdef _WIN32
   char config_file_dir_[1024] = { 0 };
+  char config_file_dir_expanded[1024] = { 0 };
   char config_file_[1024] = { 0 };
   char config_file_delay_[1024] = { 0 };
+
   GetEnvironmentVariableA("ITR_LOGGING_CONFIG_FILE_DIR",
     config_file_dir_, sizeof(config_file_dir_));
   GetEnvironmentVariableA("ITR_LOGGING_CONFIG_FILE",
     config_file_, sizeof(config_file_));
   GetEnvironmentVariableA("ITR_LOGGING_CONFIG_FILE_DELAY",
     config_file_delay_, sizeof(config_file_delay_));
-  if (strlen(config_file_dir_) != 0)
-    config_file_dir = config_file_dir_;
+
+  ExpandEnvironmentStringsA(config_file_dir_, config_file_dir_expanded,
+    sizeof(config_file_dir_expanded));
+
+  if (strlen(config_file_dir_expanded) != 0)
+    config_file_dir = config_file_dir_expanded;
   if (strlen(config_file_) != 0)
     config_file = config_file_;
   if (strlen(config_file_delay_) != 0)
