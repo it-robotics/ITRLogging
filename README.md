@@ -120,14 +120,13 @@ environment variables:
 ### Usage and compilation
 
 The recommended way to use ITRLogging is by embedding it in a shared
-library (.so/.dll). In gcc, compile it with "-Wno-unknown-pragmas"
-to have less warnings. Also you can define ITR_LOGGING_C to use C
-style logging on C++ compiler.
+library (.so/.dll). You can define:
 
-You can define ITR_LOGGING_DISABLED to fully disable any runtime call
-to log4cxx.
+* ITR_LOGGING_C: to use C style logging on C++ compiler.
+* ITR_LOGGING_DISABLED: to fully disable any runtime call to
+log4cxx.
 
-### Language, compiler and OS support
+### Language, compiler, OS support and requirements
 
 C++ and C (gnuc89) headers. It was tested with MSVC10 and gcc 4.8.
 On the latter it needs non standard extensions to be left enabled
@@ -137,6 +136,8 @@ also tested there.
 
 OS: Tested on Windows and linux. Probably needs some fixes in
 OSX and bsd during log4cxx configuration.
+
+Requirements: log4cxx 0.10.0
 
 ### Links
 

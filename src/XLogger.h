@@ -23,9 +23,6 @@ namespace log4cxx
   class XLogger;
   typedef helpers::ObjectPtrT<XLogger> XLoggerPtr;
 
-  #pragma warning(push)
-  #pragma warning( disable: 4251 )
-
   /**
   A simple example showing Logger sub-classing. It shows the
   minimum steps necessary to implement one's {@link LoggerFactory}.
@@ -34,9 +31,18 @@ namespace log4cxx
   */
   class ITR_COMMON_SHARED_API XLogger : public Logger
   {
+
+#ifdef _MSC_VER
+    #pragma warning ( push )
+    #pragma warning ( disable: 4251 )
+#endif
     // It's enough to instantiate a factory once and for all.
     static XFactoryPtr factory;
     LogString suffix;
+
+#ifdef _MSC_VER
+    #pragma warning ( pop )
+#endif
 
   public:
     DECLARE_ABSTRACT_LOG4CXX_OBJECT(XLogger)
@@ -80,6 +86,4 @@ namespace log4cxx
     bool isWarnEnabled() const;
     bool isErrorEnabled() const;
   };
-
-  #pragma warning(pop) // disable: 4251
 }
