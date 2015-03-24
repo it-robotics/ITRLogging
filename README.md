@@ -1,11 +1,10 @@
 ## ITRLogging
 
 ITRLogging is an extension to log4cxx with a simplified macro
-based interface. It provides several enhancements over
-[recommended](http://logging.apache.org/log4cxx/usage.html)
-log4cxx usage. It:
+based interface. It redesigns log4cxx [recommended](http://logging.apache.org/log4cxx/usage.html)
+usage in several ways. ITRLogging:
 
- * supports a new level layout (DETAIL, MOREDETAIL, FLOW ...);
+ * supports a new level layout;
  * supports hierarchical default logger caching: static, class,
    and function;
  * provides a C macro and API wrapper;
@@ -14,15 +13,13 @@ log4cxx usage. It:
  * can be fully disabled.
 
 Because of the very guided approach (e.g. configuration enabled by default),
-ITRLogging may suits you or not in certain parts. Also you may not like the
-new levels layout, until log4cxx properly supports custom levels addition
-(and it's unclear when this will happen). The good is that you can just edit
-it: the recommended way to use it is embedding in a common shared library.
+ITRLogging may not suits everybody in certain parts. Also not everybody may like
+the new custom level layout, until log4cxx properly supports custom levels addition
+(it's unclear when this will happen). The good news is that it can just be edited:
+the recommended way to use ITRLogging it is embedding in a common shared library.
 
-The default layout has been chosen to settle one of our long standing
-incomprehension about log4cxx: what's the difference between ERROR
-and FATAL? What's the difference between INFO and DETAIL? The chosen
-layout is the following (lower to higher):
+The default layout has been chosen to settle a personal lack of comfort with the
+official log4cxx layout. The chosen layout is the following (lower to higher):
 
  * MAXDETAIL
  * FLOW
@@ -31,9 +28,9 @@ layout is the following (lower to higher):
  * WARN
  * ERROR
  
-Of the above, probably only FLOW needs explanation: you can use it to
-add functions begin/end spamming or just to separate text from visual
-logging, that can go to MAXDETAIL. You can also forget about it.
+Of the above, probably only FLOW needs explanation: it can be used to
+add functions begin/end spamming or, if needed, just to separate text
+from visual logging, that can go to MAXDETAIL.
 
 Custom levels have been added using hidden but properly working
 features of log4cxx: "log4j.loggerFactory"[1] and "LEVEL#Factory"[2]
@@ -43,12 +40,11 @@ syntax. For the usage: just look at the provided
 ### Hierarchical default logger caching
 
 The recommended log4cxx usage with LOG4CXX_INFO(logger, "message") style
-macros it's not bad but it requires you to remind the name of the logger
-and it works only with RAII. The latter is ok if you just do C++ logging
-but it's not if you supports C, and ITRLogging supports C logging. With
-ITRLogging you can log without providing a logger by previous declaring
-a static << class << function logger (at your choice). Just look at the
-following example:
+macros it's not bad but it requires the user to remind the name of the logger
+and it works only with RAII. The latter is ok when doing just C++ logging
+but it's not when supporting C. With ITRLogging it's possible to log without
+providing a logger by previous declaring a static, class or function logger
+(at your choice). Just look at the following example:
 
 ```cpp
 #include "Class1.h"
@@ -88,7 +84,7 @@ void Class1::foo_static()
   // Will use Class1 logger
   ITR_LOG_DETAIL("Test log");
   
-  // You can also override providing logger name. It will use Class1Cust logger
+  // Override is possible also providing a logger name. It will use Class1Cust logger
   ITR_LOG_DETAIL("Class1Cust", "Test log with integer : " << 1);
 }
 
@@ -110,8 +106,8 @@ style logging and [C](https://github.com/it-robotics/ITRLogging/tree/master/test
 Also look look at the provided [properties file](https://github.com/it-robotics/ITRLogging/blob/master/resources/itr-logging.conf)
 for custom levels enabling. The properties file has to be named
 "itr-logging.conf" by default and reside in executable directory.
-To customize properties file loading you can early set these
-environment variables:
+To customize properties file loading the following environment
+variables can be early set:
 
  * ITR_LOGGING_CONFIG_FILE_DIR: base path for the properties file;
  * ITR_LOGGING_CONFIG_FILE: properties file name;
