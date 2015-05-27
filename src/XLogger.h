@@ -36,8 +36,7 @@ namespace log4cxx
     #pragma warning ( push )
     #pragma warning ( disable: 4251 )
 #endif
-    // It's enough to instantiate a factory once and for all.
-    static XFactoryPtr factory;
+
     LogString suffix;
 
 #ifdef _MSC_VER
@@ -53,8 +52,10 @@ namespace log4cxx
 
     XLogger(log4cxx::helpers::Pool& pool, const LogString& name1);
 
-    void activateOptions();
+  private:
+    static XFactoryPtr getFactory();
 
+  public:
     static XLoggerPtr getLoggerLS(const LogString& name);
     static XLoggerPtr getLogger(const std::string& name);
     static XLoggerPtr getLogger(const char* const name);
@@ -62,6 +63,8 @@ namespace log4cxx
     static XLoggerPtr getLogger(const std::wstring& name);
     static XLoggerPtr getLogger(const wchar_t* const name);
 #endif
+
+    void activateOptions();
 
     LogString getSuffix() const;
     void setSuffix(const LogString& suffix1);

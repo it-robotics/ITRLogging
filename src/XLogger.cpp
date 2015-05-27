@@ -13,10 +13,14 @@
 using namespace log4cxx;
 using namespace log4cxx::spi;
 
-XFactoryPtr XLogger::factory = new XFactory();
-
 XLogger::XLogger(log4cxx::helpers::Pool& pool, const LogString& name1)
   : Logger(pool, name1) { }
+
+XFactoryPtr XLogger::getFactory()
+{
+  static XFactoryPtr factory = new XFactory();
+  return factory;
+}
 
 void XLogger::activateOptions()
 {
@@ -25,28 +29,28 @@ void XLogger::activateOptions()
 
 XLoggerPtr XLogger::getLoggerLS(const LogString& name)
 {
-  return LogManager::getLogger(name, factory);
+  return LogManager::getLogger(name, getFactory());
 }
 
 XLoggerPtr XLogger::getLogger(const std::string& name)
 {
-  return LogManager::getLogger(name, factory);
+  return LogManager::getLogger(name, getFactory());
 }
 
 XLoggerPtr XLogger::getLogger(const char* const name)
 {
-  return LogManager::getLogger(name, factory);
+  return LogManager::getLogger(name, getFactory());
 }
 
 #if LOG4CXX_WCHAR_T_API
 
 XLoggerPtr XLogger::getLogger(const std::wstring& name)
 {
-  return LogManager::getLogger(name, factory);
+  return LogManager::getLogger(name, getFactory());
 }
 XLoggerPtr XLogger::getLogger(const wchar_t* const name)
 {
-  return LogManager::getLogger(name, factory);
+  return LogManager::getLogger(name, getFactory());
 }
 
 #endif
